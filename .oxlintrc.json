@@ -1,0 +1,4 @@
+{
+  "env": { "browser": true, "es2024": true },
+  "ignorePatterns": ["assets/node_modules/**", "assets/.build-stage/**"]
+}

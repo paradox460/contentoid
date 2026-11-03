@@ -1,0 +1,6 @@
+/* App-wide overrides that must outrank component CSS (the `components` layer holds
+   every colocated block, so a `base`-layer rule here would lose to any `.x-input` border). */
+
+:is(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--destructive);
+}

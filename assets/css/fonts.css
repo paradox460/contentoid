@@ -1,0 +1,56 @@
+/* Iosevka Custom, built from `iosevka.toml` (`mise run fonts`). One face per built weight and slope;
+   weights in between snap to the nearest of 200, 400 and 700. */
+@font-face {
+  font-family: "Iosevka Custom";
+  src: url("/fonts/IosevkaCustom-ExtraLight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Iosevka Custom";
+  src: url("/fonts/IosevkaCustom-ExtraLightItalic.woff2") format("woff2");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Iosevka Custom";
+  src: url("/fonts/IosevkaCustom-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Iosevka Custom";
+  src: url("/fonts/IosevkaCustom-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Iosevka Custom";
+  src: url("/fonts/IosevkaCustom-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Iosevka Custom";
+  src: url("/fonts/IosevkaCustom-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* One family for everything: Open Props' normalize sets `code`/`kbd`/`pre` from
+   `--font-monospace-code`, so it points here too. */
+:root {
+  --ff-base: "Iosevka Custom", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-monospace-code: var(--ff-base);
+}

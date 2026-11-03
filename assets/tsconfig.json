@@ -1,0 +1,29 @@
+// This file is needed on most editors to enable the intelligent autocompletion
+// of LiveView's JavaScript API methods, and it is used by `bun run typecheck`
+// (and the CI lint job) to type-check the first-party TypeScript sources.
+//
+// Module resolution mirrors how bun resolves the Phoenix and LiveView
+// JavaScript assets from `deps/` (via NODE_PATH at build time). The `paths`
+// aliases below let `tsc` find the same modules without a full node_modules
+// install of the Elixir deps:
+//   * `phoenix` has no bundled types, so it is mapped to `@types/phoenix`
+//     (the same typings phoenix_live_view itself depends on).
+//   * everything else resolves against `../deps/*` then `node_modules/*`.
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "phoenix": ["node_modules/@types/phoenix"],
+      "phoenix-colocated/*": ["../_build/dev/phoenix-colocated/*"],
+      "*": ["../deps/*", "node_modules/*"]
+    },
+    "allowJs": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["js/**/*"]
+}

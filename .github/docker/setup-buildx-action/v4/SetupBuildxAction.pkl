@@ -1,0 +1,74 @@
+/// Set up Docker Buildx
+module docker.`setup-buildx-action`.v4.SetupBuildxAction
+
+extends "@com.github.actions/AbstractTypedStep.pkl"
+
+fixed action: "docker/setup-buildx-action"
+
+fixed version: "v4"
+
+with: With?
+
+class With {
+  /// Buildx version. (eg. v0.3.0)
+  version: String?
+
+  /// Sets the builder driver to be used
+  ///
+  /// Default if unspecified: `"docker-container"`
+  driver: String?
+
+  /// List of additional driver-specific options. (eg. image=moby/buildkit:master)
+  hidden `driver-opts-list`: Listing<String>?
+
+  /// List of additional driver-specific options. (eg. image=moby/buildkit:master)
+  ///
+  /// To set as a [Listing], use [`driver-opts-list`].
+  `driver-opts`: String? = `driver-opts-list`?.join("\n")
+
+  /// BuildKit daemon flags
+  `buildkitd-flags`: String?
+
+  /// BuildKit daemon config file
+  `buildkitd-config`: String?
+
+  /// Inline BuildKit daemon config
+  `buildkitd-config-inline`: String?
+
+  /// Switch to this builder instance
+  ///
+  /// Default if unspecified: `"true"`
+  use: Boolean?
+
+  /// Name of the builder. If not specified, one will be generated or if it already exists, it will be used instead of creating a new one.
+  name: String?
+
+  /// Optional address for docker socket or context from `docker context ls`
+  endpoint: String?
+
+  /// Fixed platforms for current node. If not empty, values take priority over the detected ones
+  hidden platformsList: Listing<String>?
+
+  /// Fixed platforms for current node. If not empty, values take priority over the detected ones
+  ///
+  /// To set as a [Listing], use [platformsList].
+  platforms: String? = platformsList?.join(",")
+
+  /// Append additional nodes to the builder
+  append: String?
+
+  /// Keep BuildKit state on cleanup. This is only useful on persistent self-hosted runners.
+  ///
+  /// Default if unspecified: `"false"`
+  `keep-state`: Boolean?
+
+  /// Cache buildx binary to GitHub Actions cache backend
+  ///
+  /// Default if unspecified: `"true"`
+  `cache-binary`: Boolean?
+
+  /// Cleanup temp files and remove builder at the end of a job
+  ///
+  /// Default if unspecified: `"true"`
+  cleanup: Boolean?
+}

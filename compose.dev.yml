@@ -1,0 +1,36 @@
+# Development: Postgres on localhost:5432, and local builds of the tool images
+# (`docker compose -f compose.dev.yml build yt-dlp aria2 czkawka`) that replace the published ones.
+services:
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    # Named, so recreating the container keeps the data.
+    volumes:
+      - db-data:/var/lib/postgresql
+
+  # Images for the default downloaders whose tools publish none of their own (gallery-dl does:
+  # ghcr.io/mikf/gallery-dl), and for post-processors' tools (czkawka). Built, never started:
+  # Contentoid starts one container per download. Tagged with the published names, so a local
+  # build replaces the image the defaults pull.
+  yt-dlp:
+    build: docker/yt-dlp
+    image: ghcr.io/paradox460/contentoid-yt-dlp:latest
+    profiles: [build]
+
+  aria2:
+    build: docker/aria2
+    image: ghcr.io/paradox460/contentoid-aria2:latest
+    profiles: [build]
+
+  czkawka:
+    build: docker/czkawka
+    image: ghcr.io/paradox460/contentoid-czkawka:latest
+    profiles: [build]
+
+volumes:
+  db-data:

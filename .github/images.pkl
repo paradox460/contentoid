@@ -1,0 +1,258 @@
+/// Every image CI publishes to GHCR. Each `Image` becomes a workflow that builds it for
+/// linux/amd64 and linux/arm64 on native runners (`build`, one job per platform, pushing by digest),
+/// then tags the multi-platform index (`merge`). Pull requests build both platforms and push nothing.
+module images
+
+import "@com.github.actions/Workflow.pkl"
+
+import "catalog.pkl"
+
+const registry = "ghcr.io/paradox460"
+
+all: Listing<Image> = new {
+  new Image {
+    file = "contentoid"
+    package = "contentoid"
+    description = "Hand Contentoid a URL; a downloader fetches it in its own container."
+    context = "."
+    on {
+      push {
+        branches { "main" }
+        tags { "v*" }
+      }
+      pull_request {}
+      workflow_dispatch {}
+    }
+    tags =
+      """
+      type=semver,pattern={{version}}
+      type=semver,pattern={{major}}.{{minor}}
+      type=edge,branch=main
+      type=ref,event=pr
+      """
+    flavor = "latest=auto"
+    versionArg = null
+    buildArgs = "VERSION=${{ steps.meta.outputs.version }}"
+    preBuild {
+      new {
+        name = "Check the tag matches mix.exs"
+        `if` = "startsWith(github.ref, 'refs/tags/v')"
+        run =
+          #"""
+          version="$(sed -n 's/^ *version: "\([^"]*\)".*/\1/p' mix.exs | head -n 1)"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME doesn't match mix.exs version $version"
+            exit 1
+          fi
+          """#
+      }
+    }
+  }
+  tool(
+    "yt-dlp",
+    "YT_DLP_VERSION",
+    "yt-dlp with ffmpeg and deno, for Contentoid's yt-dlp downloader.",
+  )
+  tool("aria2", "ARIA2_VERSION", "aria2 with curl and jq, for Contentoid's aria2c downloader.")
+  tool("czkawka", "CZKAWKA_VERSION", "czkawka_cli with ffmpeg, for a Contentoid post-processor.")
+}
+
+/// A tool image built from `docker/<dir>`, published as `contentoid-<dir>` when that directory
+/// changes on main, tagged `latest` and the tool's version (the Dockerfile's `versionArg`).
+local function tool(dir: String, versionArg_: String, description_: String): Image = new Image {
+  local triggerPaths = new Listing<String> {
+    "docker/\(dir)/**"
+    ".github/workflows/image-\(dir).yml"
+  }
+  file = dir
+  package = "contentoid-\(dir)"
+  description = description_
+  context = "docker/\(dir)"
+  on {
+    push {
+      branches { "main" }
+      paths = triggerPaths
+    }
+    pull_request { paths = triggerPaths }
+    workflow_dispatch {}
+  }
+  tags =
+    """
+    type=raw,value=latest,enable={{is_default_branch}}
+    type=raw,value=${{ steps.version.outputs.version }},enable={{is_default_branch}}
+    type=ref,event=pr
+    """
+  flavor = "latest=false"
+  versionArg = versionArg_
+  buildArgs = null
+}
+
+class Image {
+  /// The workflow's file name, `workflows/image-<file>.yml`.
+  file: String
+  /// The GHCR package name.
+  package: String
+  /// The index's `org.opencontainers.image.description` annotation.
+  description: String
+  /// The build context, holding the Dockerfile.
+  context: String
+  on: Workflow.On
+  /// docker/metadata-action `tags`.
+  tags: String
+  /// docker/metadata-action `flavor`.
+  flavor: String
+  /// The Dockerfile ARG holding the tool's version; tagged on the merged image. Null for the app.
+  versionArg: String?
+  /// `build-args` for build-push-action. Null for none.
+  buildArgs: String?
+  /// Steps run in `build` after checkout (the app's tag check).
+  preBuild: Listing<Workflow.Step> = new {}
+  fixed image: String = "\(registry)/\(package)"
+  hidden fixed workflow: Workflow = workflowOf(this)
+}
+
+local const notPullRequest = "github.event_name != 'pull_request'"
+
+local const checkout = (catalog.`actions/checkout@v6`) {
+  with { `persist-credentials` = false }
+}
+
+local const function metadata(image: Image) = (catalog.`docker/metadata-action@v6`) {
+  id = "meta"
+  with {
+    images = image.image
+    tags = image.tags
+    flavor = image.flavor
+  }
+}
+
+local const function login(condition: String?) = (catalog.`docker/login-action@v4`) {
+  `if` = condition
+  with {
+    registry = "ghcr.io"
+    username = "${{ github.actor }}"
+    password = "${{ secrets.GITHUB_TOKEN }}"
+  }
+}
+
+/// The tool's version, from its Dockerfile's `versionArg`, as `steps.version.outputs.version`.
+local const function version(image: Image): Workflow.Step = new {
+  id = "version"
+  run =
+    """
+    echo "version=$(sed -n 's/^ARG \(image.versionArg)=//p' docker/\(image.file)/Dockerfile)" >> "$GITHUB_OUTPUT"
+    """
+}
+
+local const function workflowOf(image: Image): Workflow = new {
+  name = "Image: \(image.package)"
+  on = image.on
+  permissions { contents = "read" }
+  jobs {
+    ["build"] {
+      `runs-on` = "${{ matrix.runner }}"
+      strategy {
+        matrix {
+          ["include"] {
+            new {
+              platform = "linux/amd64"
+              runner = "ubuntu-24.04"
+              arch = "amd64"
+            }
+            new {
+              platform = "linux/arm64"
+              runner = "ubuntu-24.04-arm"
+              arch = "arm64"
+            }
+          }
+        }
+      }
+      permissions {
+        contents = "read"
+        packages = "write"
+      }
+      steps {
+        checkout
+        ...image.preBuild
+        // The tags name it; metadata-action only applies them in `merge`, but evaluates them here too.
+        when (image.versionArg != null) { version(image) }
+        catalog.`docker/setup-buildx-action@v4`
+        login(notPullRequest)
+        metadata(image)
+        (catalog.`docker/build-push-action@v7`) {
+          id = "build"
+          with {
+            context = image.context
+            platforms = "${{ matrix.platform }}"
+            labels = "${{ steps.meta.outputs.labels }}"
+            outputs =
+              "type=image,name=\(image.image),push-by-digest=true,name-canonical=true,push=${{ \(notPullRequest) }}"
+            `cache-from` = "type=gha,scope=\(image.package)-${{ matrix.arch }}"
+            `cache-to` = "type=gha,mode=max,scope=\(image.package)-${{ matrix.arch }}"
+            `build-args` = image.buildArgs
+          }
+        }
+        new {
+          name = "Export digest"
+          `if` = notPullRequest
+          run =
+            """
+            mkdir -p "$RUNNER_TEMP/digests"
+            digest="${{ steps.build.outputs.digest }}"
+            touch "$RUNNER_TEMP/digests/${digest#sha256:}"
+            """
+        }
+        (catalog.`actions/upload-artifact@v7`) {
+          `if` = notPullRequest
+          with {
+            name = "digests-\(image.package)-${{ matrix.arch }}"
+            pathList { "${{ runner.temp }}/digests/*" }
+            `if-no-files-found` = "error"
+            `retention-days` = 1
+          }
+        }
+      }
+    }
+    ["merge"] {
+      needs = "build"
+      `if` = notPullRequest
+      `runs-on` = "ubuntu-24.04"
+      permissions {
+        contents = "read"
+        packages = "write"
+      }
+      steps {
+        when (image.versionArg != null) {
+          checkout
+          version(image)
+        }
+        (catalog.`actions/download-artifact@v8`) {
+          with {
+            path = "${{ runner.temp }}/digests"
+            pattern = "digests-\(image.package)-*"
+            `merge-multiple` = true
+          }
+        }
+        catalog.`docker/setup-buildx-action@v4`
+        login(null)
+        metadata(image)
+        new {
+          name = "Create the multi-platform image"
+          `working-directory` = "${{ runner.temp }}/digests"
+          run =
+            """
+            docker buildx imagetools create \\
+              $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \\
+              --annotation "index:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \\
+              --annotation "index:org.opencontainers.image.description=\(image.description)" \\
+              $(printf '\(image.image)@sha256:%s ' *)
+            """
+        }
+        new {
+          name = "Inspect"
+          run = "docker buildx imagetools inspect \(image.image):${{ steps.meta.outputs.version }}"
+        }
+      }
+    }
+  }
+}

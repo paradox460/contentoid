@@ -1,0 +1,6 @@
+# jj always checks out LF; keep it LF everywhere, including Windows git checkouts.
+* text=auto eol=lf
+
+# Real binary assets: never eol-convert these.
+*.woff2 binary
+*.ico binary

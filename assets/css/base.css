@@ -1,0 +1,67 @@
+/* Make LiveView wrapper divs transparent for layout */
+[data-phx-session],
+[data-phx-teleported-src] {
+  display: contents;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  /* `viewport-fit=cover` (root layout) lets the page run under the notch and home indicator; the
+     insets keep content clear of them. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+/* 16px on every screen: iOS Safari zooms into any focused input under 16px. `<.input>` and every
+   rem size follow. */
+:root {
+  font-size: 16px;
+  font-family: var(--ff-base);
+  color: var(--foreground);
+  background: var(--background);
+}
+
+/* Angular everywhere (DESIGN.md): this outranks Open Props' normalize, which rounds buttons, inputs,
+   `<mark>`, `<code>` and more, and every UA default. */
+*,
+::before,
+::after {
+  border-radius: 0;
+}
+
+::selection {
+  background: var(--surface-3);
+}
+
+/* Open Props' normalize hardcodes these from its own scales. */
+:where(a[href]),
+:where(a[href]:visited) {
+  text-decoration-color: currentColor;
+}
+
+::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+:where(dialog) {
+  box-shadow: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--ring);
+  outline-offset: 1px;
+}
+
+/* Style icons from iconex. Never squeezed by a crowded flex row: the size is the font's, always. */
+.iconex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}

@@ -1,0 +1,118 @@
+# Generated from Workflow.pkl. DO NOT EDIT.
+name: 'Image: contentoid-czkawka'
+'on':
+  pull_request:
+    paths:
+    - docker/czkawka/**
+    - .github/workflows/image-czkawka.yml
+  push:
+    branches:
+    - main
+    paths:
+    - docker/czkawka/**
+    - .github/workflows/image-czkawka.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+        - platform: linux/amd64
+          runner: ubuntu-24.04
+          arch: amd64
+        - platform: linux/arm64
+          runner: ubuntu-24.04-arm
+          arch: arm64
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ${{ matrix.runner }}
+    steps:
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      with:
+        persist-credentials: false
+    - id: version
+      run: echo "version=$(sed -n 's/^ARG CZKAWKA_VERSION=//p' docker/czkawka/Dockerfile)" >> "$GITHUB_OUTPUT"
+    - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+    - if: github.event_name != 'pull_request'
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - id: meta
+      uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
+      with:
+        images: ghcr.io/paradox460/contentoid-czkawka
+        tags: |-
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=${{ steps.version.outputs.version }},enable={{is_default_branch}}
+          type=ref,event=pr
+        flavor: latest=false
+    - id: build
+      uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+      with:
+        cache-from: type=gha,scope=contentoid-czkawka-${{ matrix.arch }}
+        cache-to: type=gha,mode=max,scope=contentoid-czkawka-${{ matrix.arch }}
+        context: docker/czkawka
+        labels: ${{ steps.meta.outputs.labels }}
+        outputs: type=image,name=ghcr.io/paradox460/contentoid-czkawka,push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}
+        platforms: ${{ matrix.platform }}
+    - name: Export digest
+      if: github.event_name != 'pull_request'
+      run: |-
+        mkdir -p "$RUNNER_TEMP/digests"
+        digest="${{ steps.build.outputs.digest }}"
+        touch "$RUNNER_TEMP/digests/${digest#sha256:}"
+    - if: github.event_name != 'pull_request'
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+      with:
+        name: digests-contentoid-czkawka-${{ matrix.arch }}
+        path: ${{ runner.temp }}/digests/*
+        if-no-files-found: error
+        retention-days: 1
+  merge:
+    if: github.event_name != 'pull_request'
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      with:
+        persist-credentials: false
+    - id: version
+      run: echo "version=$(sed -n 's/^ARG CZKAWKA_VERSION=//p' docker/czkawka/Dockerfile)" >> "$GITHUB_OUTPUT"
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+      with:
+        path: ${{ runner.temp }}/digests
+        pattern: digests-contentoid-czkawka-*
+        merge-multiple: true
+    - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+    - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - id: meta
+      uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
+      with:
+        images: ghcr.io/paradox460/contentoid-czkawka
+        tags: |-
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=${{ steps.version.outputs.version }},enable={{is_default_branch}}
+          type=ref,event=pr
+        flavor: latest=false
+    - name: Create the multi-platform image
+      working-directory: ${{ runner.temp }}/digests
+      run: |-
+        docker buildx imagetools create \
+          $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+          --annotation "index:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+          --annotation "index:org.opencontainers.image.description=czkawka_cli with ffmpeg, for a Contentoid post-processor." \
+          $(printf 'ghcr.io/paradox460/contentoid-czkawka@sha256:%s ' *)
+    - name: Inspect
+      run: docker buildx imagetools inspect ghcr.io/paradox460/contentoid-czkawka:${{ steps.meta.outputs.version }}

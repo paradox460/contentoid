@@ -1,0 +1,77 @@
+min_version = "2026.10.1"
+
+[tools]
+bun = "latest"
+elixir = "latest"
+erlang = "latest"
+# Standalone oxfmt (GitHub release binary, no Node.js); mise's registry `oxfmt` is npm-backed and would need node.
+"github:oxc-project/oxc" = { version = "0.75.0", version_prefix = "oxfmt_v", matching = "oxfmt", rename_exe = "oxfmt" }
+oxlint = "1.90.0"
+pkl = "0.32.2"
+
+[settings]
+lockfile = true
+
+[env]
+MIX_OS_DEPS_COMPILE_PARTITION_COUNT = "{{ (num_cpus() | int / 2) | int }}"
+
+# Builds the Iosevka Custom webfonts from `iosevka.toml` and copies the faces `assets/css/fonts.css`
+# loads into `priv/static/fonts`. Needs `ttfautohint` on PATH (Homebrew: `brew install ttfautohint`).
+[tasks.fonts]
+description = "Build Iosevka Custom (iosevka.toml) into priv/static/fonts"
+tools = { node = "24" }
+sources = ["iosevka.toml"]
+outputs = ["priv/static/fonts/IosevkaCustom-*.woff2"]
+run = '''
+set -euo pipefail
+version=v34.9.1
+src=tmp/iosevka
+if [ "$(git -C "$src" describe --tags 2>/dev/null)" != "$version" ]; then
+  rm -rf "$src"
+  git clone --depth 1 --branch "$version" https://github.com/be5invis/Iosevka.git "$src"
+fi
+cp iosevka.toml "$src/private-build-plans.toml"
+(cd "$src" && npm ci --no-audit --no-fund && npm run build -- woff2::IosevkaCustom)
+for face in ExtraLight ExtraLightItalic Regular Italic Bold BoldItalic; do
+  cp "$src/dist/IosevkaCustom/WOFF2/IosevkaCustom-$face.woff2" priv/static/fonts/
+done
+'''
+
+# Builds the release image (Dockerfile), tagged with mix.exs's version and `latest`, with Docker or
+# Podman. Running the image: docs/deployment.md.
+[tasks.release]
+description = "Build the Contentoid release image; --push to push it"
+usage = '''
+flag "--image <image>" default="contentoid" help="Image name, e.g. ghcr.io/paradox460/contentoid"
+flag "--engine <engine>" help="docker or podman; default: docker if it's on PATH, else podman"
+flag "--platform <platform>" help="Target platform, e.g. linux/amd64 for an x86 server"
+flag "--push" help="Push both tags after building"
+'''
+run = '''
+set -euo pipefail
+image="${usage_image:-contentoid}"
+engine="${usage_engine:-}"
+if [ -z "$engine" ]; then
+  if command -v docker >/dev/null; then engine=docker
+  elif command -v podman >/dev/null; then engine=podman
+  else echo "release: neither docker nor podman is on PATH" >&2; exit 1
+  fi
+fi
+version="$(sed -n 's/^ *version: "\([^"]*\)".*/\1/p' mix.exs | head -n 1)"
+if [ -z "$version" ]; then
+  echo "release: can't read the version from mix.exs" >&2
+  exit 1
+fi
+
+args=(build --build-arg "VERSION=$version" -t "$image:$version" -t "$image:latest")
+if [ -n "${usage_platform:-}" ]; then args+=(--platform "$usage_platform"); fi
+
+echo "release: building $image:$version with $engine"
+"$engine" "${args[@]}" .
+
+if [ "${usage_push:-false}" = "true" ]; then
+  "$engine" push "$image:$version"
+  "$engine" push "$image:latest"
+fi
+echo "release: built $image:$version and $image:latest"
+'''

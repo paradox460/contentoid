@@ -1,0 +1,17 @@
+@layer props, normalize, fonts, tokens, base, components, overrides;
+
+@import "media.css";
+
+@import "open-props/style" layer(props);
+@import "open-props/palette" layer(props);
+@import "open-props/oklch-hues" layer(props);
+
+/* optional imports that use the props */
+@import "open-props/normalize" layer(normalize);
+
+@import "tokens.css" layer(tokens);
+@import "fonts.css" layer(fonts);
+@import "base.css" layer(base);
+
+@import "phoenix-colocated/contentoid/colocated.css" layer(components);
+@import "utilities.css" layer(overrides);

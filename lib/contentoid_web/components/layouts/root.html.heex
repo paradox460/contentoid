@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang={ContentoidWeb.Locale.html_lang()}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title default="Contentoid" suffix=" · Contentoid" phx-no-format>{assigns[:page_title]}</.live_title>
+    <link rel="icon" href={~p"/favicon.ico"} />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <%!--
+      `type="module"`, not a classic script: app.js is Bun's ESM output, and a classic script puts
+      every top-level declaration on `window`. Module scripts get their own scope and are deferred.
+    --%>
+    <script phx-track-static type="module" src={~p"/assets/js/app.js"}>
+    </script>
+  </head>
+  <body>
+    {Iconex.sprite_tag()}
+    {@inner_content}
+  </body>
+</html>

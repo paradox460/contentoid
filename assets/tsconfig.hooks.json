@@ -1,0 +1,24 @@
+// Type-checks the colocated LiveView hooks the Phoenix compiler extracts to
+// `_build/$MIX_ENV/phoenix-colocated/contentoid/`. These files only exist after
+// `mix compile`, so this config is separate from the editor-facing
+// `tsconfig.json` (which type-checks the hand-written `js/` sources).
+//
+// Run with: bun run typecheck:hooks   (after `mix compile`)
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "phoenix": ["node_modules/@types/phoenix"],
+      "phoenix-colocated/*": ["../_build/dev/phoenix-colocated/*"],
+      "*": ["../deps/*", "node_modules/*"]
+    },
+    "allowJs": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["../_build/*/phoenix-colocated/contentoid/**/*.js"]
+}

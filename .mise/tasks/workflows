@@ -1,0 +1,11 @@
+#!/usr/bin/env fish
+#MISE description="Generate the GitHub Actions workflows from .github/*.pkl"
+
+# Generates .github/workflows/*.yml and .github/dependabot.yml from .github/index.pkl, with every
+# action pinned to a git SHA (.github/workflows/__lockfile__.yml). Never edit the YAML by hand.
+# CI's Workflows check runs the same pkl command directly, so it doesn't need fish.
+
+cd $MISE_PROJECT_ROOT
+or exit 1
+
+pkl eval --project-dir .github -m .github .github/index.pkl

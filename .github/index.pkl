@@ -1,0 +1,10 @@
+amends "@pkl.github.dependabotManagedActions/DependabotManagedActions.pkl"
+
+import "images.pkl"
+
+workflows {
+  for (image in images.all) {
+    ["workflows/image-\(image.file).yml"] = image.workflow
+  }
+  ["workflows/workflows.yml"] = import("workflows-check.pkl")
+}

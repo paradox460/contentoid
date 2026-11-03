@@ -1,0 +1,48 @@
+# Contentoid with Postgres. Next to this file, a .env made from .env.example; then
+# `docker compose up -d` and open http://localhost:4100. README.md, "Quick start".
+name: contentoid
+
+services:
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: contentoid
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "contentoid"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  contentoid:
+    image: ghcr.io/paradox460/contentoid:${CONTENTOID_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    # The host user who owns the downloads, and the Docker socket's group.
+    user: "${PUID:-1000}:${PGID:-1000}"
+    group_add:
+      - "${DOCKER_GID:?set DOCKER_GID in .env}"
+    environment:
+      DATABASE_URL: ecto://postgres:${POSTGRES_PASSWORD}@db/contentoid
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE in .env}
+      PHX_HOST: ${PHX_HOST:-localhost}
+      FORCE_SSL: ${FORCE_SSL:-false}
+      DOWNLOAD_DIR: ${DOWNLOAD_DIR:?set DOWNLOAD_DIR in .env}
+      DEFAULT_LOCALE: ${DEFAULT_LOCALE:-en}
+    ports:
+      - "${PUBLISH:-127.0.0.1:4100}:4100"
+    volumes:
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+      # Same path on both sides: Contentoid hands it to Docker as a host path.
+      - ${DOWNLOAD_DIR}:${DOWNLOAD_DIR}
+    # At shutdown it stops and removes its download containers; Docker's default 10 s is too short.
+    stop_grace_period: 90s
+
+volumes:
+  db-data:

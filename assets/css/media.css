@@ -1,0 +1,10 @@
+/* The app's saved media queries (Media Queries 5 `@custom-media`), resolved at build time by
+   LightningCSS (`assets/build.ts`). Use these names in every breakpoint/touch `@media`, in
+   `assets/css` and in colocated `<style>` blocks alike; never repeat the literals. */
+/* 54rem (800px): a book-style foldable's inner screen (Pixel 9/10 Pro Fold: 791px) gets the phone
+   layout; tablets in portrait (iPad 820px and up) stay above it. */
+@custom-media --phone (max-width: 54rem);
+@custom-media --tablet (max-width: 64rem);
+@custom-media --laptop (max-width: 75rem);
+@custom-media --touch (hover: none);
+@custom-media --coarse (pointer: coarse);

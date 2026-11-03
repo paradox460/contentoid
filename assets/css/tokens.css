@@ -1,0 +1,101 @@
+/* Colors: base16 Tomorrow (light) and Tomorrow Night (dark), Chris Kempson's Tomorrow theme as
+   published by tinted-theming (https://github.com/tinted-theming/schemes, base16/tomorrow.yaml and
+   tomorrow-night.yaml). The palette is `--base00`…`--base0F`, swapped per scheme; components use the
+   semantic tokens below it, never the palette directly. DESIGN.md has the rules and the contrast
+   figures. */
+
+:root {
+  color-scheme: light;
+
+  --base00: #ffffff;
+  --base01: #e0e0e0;
+  --base02: #c5c8c6;
+  --base03: #b4b7b4;
+  --base04: #969896;
+  --base05: #373b41;
+  --base06: #282a2e;
+  --base07: #1d1f21;
+  --base08: #c82829;
+  --base09: #f5871f;
+  --base0A: #eab700;
+  --base0B: #718c00;
+  --base0C: #3e999f;
+  --base0D: #4271ae;
+  --base0E: #8959a8;
+  --base0F: #a3685a;
+
+  /* No light gray holds 4.5:1 on white (base04 is 2.9:1); base04 pulled toward the foreground
+     until it holds 4.5:1 on `--surface-2`. */
+  --muted-foreground: color-mix(in srgb, var(--base04), var(--base05) 60%);
+  /* base03 is 2.0:1 on white, too faint for control edges; base04 is the nearest to 3:1. */
+  --border-strong: var(--base04);
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+
+    --base00: #1d1f21;
+    --base01: #282a2e;
+    --base02: #373b41;
+    --base03: #969896;
+    --base04: #b4b7b4;
+    --base05: #c5c8c6;
+    --base06: #e0e0e0;
+    --base07: #ffffff;
+    --base08: #cc6666;
+    --base09: #de935f;
+    --base0A: #f0c674;
+    --base0B: #b5bd68;
+    --base0C: #8abeb7;
+    --base0D: #81a2be;
+    --base0E: #b294bb;
+    --base0F: #a3685a;
+
+    --muted-foreground: var(--base03);
+    --border-strong: var(--base03);
+  }
+
+  /* Declared once: each resolves against whichever palette the scheme sets on this element. */
+  --background: var(--base00);
+  --foreground: var(--base05);
+
+  /* Surfaces are base16's three background steps: the page (base00), raised chrome, hover and zebra
+     rows (base01), and selected or pressed (base02). */
+  --surface-1: var(--base00);
+  --surface-2: var(--base01);
+  --surface-3: var(--base02);
+
+  --border: var(--base02);
+
+  /* Blue reads as text on both backgrounds and carries background-colored text as a fill, so one
+     token serves both roles. */
+  --primary: var(--base0D);
+  --primary-foreground: var(--base00);
+  --ring: var(--base0D);
+
+  --destructive: var(--base08);
+  --destructive-foreground: var(--base00);
+
+  --success: var(--base0B);
+  --warning: var(--base0A);
+  --info: var(--base0C);
+
+  /* Names Open Props' normalize reads (links, `th`, `kbd`/`fieldset` borders, scrollbars); without
+     these it falls back to its own indigo and gray scales. */
+  --link: var(--primary);
+  --link-visited: var(--base0E);
+  --text-1: var(--foreground);
+  --text-2: var(--muted-foreground);
+  --surface-4: var(--border-strong);
+  --scrollthumb-color: var(--border-strong);
+}
+
+/*Supplementary Sizing tokens*/
+:root {
+  --panel-gap: 0.75rem;
+  /* Minimum hit area on coarse pointers. */
+  --touch-target: 44px;
+
+  @media (--phone) {
+    --panel-gap: 0.5rem;
+  }
+}

@@ -1,0 +1,13 @@
+extends "@com.github.actions/catalog.pkl"
+
+import "docker/build-push-action/v7/BuildPushAction.pkl"
+import "docker/login-action/v4/LoginAction.pkl"
+import "docker/metadata-action/v6/MetadataAction.pkl"
+import "docker/setup-buildx-action/v4/SetupBuildxAction.pkl"
+import "jdx/mise-action/v5/MiseAction.pkl"
+
+`docker/setup-buildx-action@v4`: SetupBuildxAction
+`docker/login-action@v4`: LoginAction
+`docker/metadata-action@v6`: MetadataAction
+`docker/build-push-action@v7`: BuildPushAction
+`jdx/mise-action@v5`: MiseAction

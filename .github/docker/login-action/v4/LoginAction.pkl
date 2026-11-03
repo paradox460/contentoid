@@ -1,0 +1,35 @@
+/// GitHub Action to login against a Docker registry
+module docker.`login-action`.v4.LoginAction
+
+extends "@com.github.actions/AbstractTypedStep.pkl"
+
+fixed action: "docker/login-action"
+
+fixed version: "v4"
+
+with: With?
+
+class With {
+  /// Server address of Docker registry. If not set then will default to Docker Hub
+  registry: String?
+
+  /// Username used to log against the Docker registry
+  username: String?
+
+  /// Password or personal access token used to log against the Docker registry
+  password: String?
+
+  /// Specifies whether the given registry is ECR (auto, true or false)
+  ecr: Boolean?
+
+  /// Scope for the authentication token
+  scope: String?
+
+  /// Log out from the Docker registry at the end of a job
+  ///
+  /// Default if unspecified: `"true"`
+  logout: Boolean?
+
+  /// Raw authentication to registries, defined as YAML objects
+  `registry-auth`: String?
+}

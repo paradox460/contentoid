@@ -1,0 +1,265 @@
+## `msgid`s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove `msgid`s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use `mix gettext.extract --merge` or `mix gettext.merge`
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: en\n"
+
+## From Ecto.Changeset.cast/4
+msgid "can't be blank"
+msgstr ""
+
+## From Ecto.Changeset.unique_constraint/3
+msgid "has already been taken"
+msgstr ""
+
+## From Ecto.Changeset.put_change/3
+msgid "is invalid"
+msgstr ""
+
+## From Ecto.Changeset.validate_acceptance/3
+msgid "must be accepted"
+msgstr ""
+
+## From Ecto.Changeset.validate_format/3
+msgid "has invalid format"
+msgstr ""
+
+## From Ecto.Changeset.validate_subset/3
+msgid "has an invalid entry"
+msgstr ""
+
+## From Ecto.Changeset.validate_exclusion/3
+msgid "is reserved"
+msgstr ""
+
+## From Ecto.Changeset.validate_confirmation/3
+msgid "does not match confirmation"
+msgstr ""
+
+## From Ecto.Changeset.no_assoc_constraint/3
+msgid "is still associated with this entry"
+msgstr ""
+
+msgid "are still associated with this entry"
+msgstr ""
+
+## From Ecto.Changeset.validate_length/3
+msgid "should have %{count} item(s)"
+msgid_plural "should have %{count} item(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should be %{count} character(s)"
+msgid_plural "should be %{count} character(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should be %{count} byte(s)"
+msgid_plural "should be %{count} byte(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should have at least %{count} item(s)"
+msgid_plural "should have at least %{count} item(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should be at least %{count} character(s)"
+msgid_plural "should be at least %{count} character(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should be at least %{count} byte(s)"
+msgid_plural "should be at least %{count} byte(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should have at most %{count} item(s)"
+msgid_plural "should have at most %{count} item(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should be at most %{count} character(s)"
+msgid_plural "should be at most %{count} character(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "should be at most %{count} byte(s)"
+msgid_plural "should be at most %{count} byte(s)"
+msgstr[0] ""
+msgstr[1] ""
+
+## From Ecto.Changeset.validate_number/3
+msgid "must be less than %{number}"
+msgstr ""
+
+msgid "must be greater than %{number}"
+msgstr ""
+
+msgid "must be less than or equal to %{number}"
+msgstr ""
+
+msgid "must be greater than or equal to %{number}"
+msgstr ""
+
+msgid "must be equal to %{number}"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#, elixir-autogen, elixir-format
+msgid "%{path} is inside the mount at %{target}; files go in the container itself"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#, elixir-autogen, elixir-format
+msgid "%{path} is used by more than one file"
+msgstr ""
+
+#: lib/contentoid/post_processors/assignment.ex
+#: lib/contentoid/post_processors/post_processor.ex
+#, elixir-autogen, elixir-format
+msgid "%{target} is inside /contentoid, which Contentoid uses"
+msgstr ""
+
+#: lib/contentoid/post_processors/assignment.ex
+#, elixir-autogen, elixir-format
+msgid "%{target} is mounted by the post-processor already"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#: lib/contentoid/post_processors/assignment.ex
+#, elixir-autogen, elixir-format
+msgid "%{target} is mounted more than once"
+msgstr ""
+
+#: lib/contentoid/schedules/cron.ex
+#, elixir-autogen, elixir-format
+msgid "@reboot isn't a schedule"
+msgstr ""
+
+#: lib/contentoid/downloads/download.ex
+#, elixir-autogen, elixir-format
+msgid "aren't taken by a URL downloader"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#, elixir-autogen, elixir-format
+msgid "can't be the container's root"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#, elixir-autogen, elixir-format
+msgid "can't leave the download directory (no ..)"
+msgstr ""
+
+#: lib/contentoid/downloads/download.ex
+#, elixir-autogen, elixir-format
+msgid "doesn't exist"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgid "enter a URL"
+msgstr ""
+
+#: lib/contentoid/downloads/download.ex
+#, elixir-autogen, elixir-format
+msgid "have a quote that's never closed"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader/config_file.ex
+#, elixir-autogen, elixir-format
+msgid "is a file name, without /"
+msgstr ""
+
+#: lib/contentoid/downloads/download.ex
+#, elixir-autogen, elixir-format
+msgid "is disabled"
+msgstr ""
+
+#: lib/contentoid/schedules/schedule.ex
+#, elixir-autogen, elixir-format
+msgid "isn't a time zone (e.g. America/Denver)"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#, elixir-autogen, elixir-format
+msgid "isn't a valid regex: %{reason} at position %{at}"
+msgstr ""
+
+#: lib/contentoid/downloads/download.ex
+#, elixir-autogen, elixir-format
+msgid "isn't taken by an arguments downloader"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgid "line %{line}: %{message}"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#: lib/contentoid/downloaders/downloader/config_file.ex
+#, elixir-autogen, elixir-format
+msgid "must be an absolute path in the container"
+msgstr ""
+
+#: lib/contentoid/settings/setting.ex
+#, elixir-autogen, elixir-format
+msgid "must be an absolute path or start with ~"
+msgstr ""
+
+#: lib/contentoid/downloads/download.ex
+#, elixir-autogen, elixir-format
+msgid "must be an http, https or ftp URL"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader/config_file.ex
+#, elixir-autogen, elixir-format
+msgid "must be at most 1 MiB"
+msgstr ""
+
+#: lib/contentoid/schedules/schedule.ex
+#, elixir-autogen, elixir-format
+msgid "must be h:m:s, e.g. 0:30:00 for half an hour"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#, elixir-autogen, elixir-format
+msgid "must not contain spaces"
+msgstr ""
+
+#: lib/contentoid/downloads/download.ex
+#, elixir-autogen, elixir-format
+msgid "no enabled downloader matches this URL; pick one"
+msgstr ""
+
+#: lib/contentoid/post_processors/assignment.ex
+#, elixir-autogen, elixir-format
+msgid "pick a post-processor"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader/volume.ex
+#, elixir-autogen, elixir-format
+msgid "use letters, digits, _ . and -"
+msgstr ""
+
+#: lib/contentoid/downloaders/downloader.ex
+#, elixir-autogen, elixir-format
+msgid "use lowercase letters, digits and single dashes"
+msgstr ""
+
+#: lib/contentoid/settings/setting.ex
+#, elixir-autogen, elixir-format
+msgid "were just saved elsewhere; reload the page"
+msgstr ""
+
+#: lib/contentoid/post_processors/assignment.ex
+#, elixir-autogen, elixir-format
+msgid "would cover the post-processor's file %{path}"
+msgstr ""

@@ -1,0 +1,52 @@
+/// Fails when the generated workflows are out of step with `.github/*.pkl`.
+amends "@com.github.actions/Workflow.pkl"
+
+import "catalog.pkl"
+
+local triggerPaths = new Listing<String> {
+  ".github/**"
+  "mise.toml"
+  "mise.lock"
+}
+
+name = "Workflows"
+
+on {
+  push {
+    branches { "main" }
+    paths = triggerPaths
+  }
+  pull_request { paths = triggerPaths }
+}
+
+permissions { contents = "read" }
+
+jobs {
+  ["check"] {
+    `runs-on` = "ubuntu-24.04"
+    steps {
+      (catalog.`actions/checkout@v6`) {
+        with { `persist-credentials` = false }
+      }
+      // Only Pkl: the other mise tools would compile Erlang.
+      (catalog.`jdx/mise-action@v5`) {
+        with { install_args = "pkl" }
+      }
+      new {
+        name = "Generate"
+        // Pkl directly: `mise run workflows` could install every tool.
+        run = "pkl eval --project-dir .github -m .github .github/index.pkl"
+      }
+      new {
+        name = "Check for changes"
+        run =
+          """
+          git diff --exit-code -- .github || {
+            echo "::error::.github is out of date: run mise run workflows and commit the result"
+            exit 1
+          }
+          """
+      }
+    }
+  }
+}
