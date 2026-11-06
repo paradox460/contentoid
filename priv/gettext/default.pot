@@ -1399,3 +1399,33 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgid "Every downloaded file, with the URL of what it is."
 msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgid "No output yet."
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgid "No output."
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgid "Skipped"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgid "Succeeded"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgid "Waiting"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgid "since"
+msgstr ""

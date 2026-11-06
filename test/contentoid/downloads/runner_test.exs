@@ -11,6 +11,7 @@ defmodule Contentoid.Downloads.RunnerTest do
   alias Contentoid.Downloads
   alias Contentoid.Downloads.Docker
   alias Contentoid.Downloads.Download
+  alias Contentoid.Downloads.Download.Step
   alias Contentoid.Downloads.Runner
   alias Contentoid.Downloads.Worker
   alias Contentoid.FakeDocker
@@ -440,10 +441,25 @@ defmodule Contentoid.Downloads.RunnerTest do
       moved_path = Path.join(library, "video.mp4")
       new_path = Path.join([root, "videos", "video.mkv"])
 
-      assert %Download{status: :completed, phase: :post_processing, files: [^moved_path, ^new_path], log: log} =
-               Downloads.get_download!(download.id)
+      move_name = "#{move.name} /library"
+      transcode_name = transcode.name
 
-      assert log =~ "== #{move.name} /library =="
+      assert %Download{
+               status: :completed,
+               phase: :post_processing,
+               files: [^moved_path, ^new_path],
+               steps: [
+                 %Step{
+                   name: ^move_name,
+                   status: :succeeded,
+                   exit_status: 0,
+                   started_at: %DateTime{},
+                   finished_at: %DateTime{}
+                 },
+                 %Step{name: ^transcode_name, status: :succeeded}
+               ]
+             } = Downloads.get_download!(download.id)
+
       assert [%{path: ^moved_path} | _new] = Downloads.list_download_items(download)
     end
 
@@ -501,9 +517,15 @@ defmodule Contentoid.Downloads.RunnerTest do
       # The first move lands in films through its mount; the second no longer sees the file (it's
       # outside every mount it has) and moves nothing.
       moved = Path.join(films, "video.mp4")
-      assert %Download{status: :completed, files: [^moved], log: log} = Downloads.get_download!(download.id)
-      assert log =~ "== #{move.name} /dest (#{films} at /dest) =="
-      assert log =~ "not passed to #{move.name} /dest (#{shows} at /dest), outside every mount: #{moved}"
+
+      assert %Download{
+               status: :completed,
+               files: [^moved],
+               steps: [%Step{status: :succeeded}, %Step{name: second_name, log: second_log}]
+             } = Downloads.get_download!(download.id)
+
+      assert second_name == "#{move.name} /dest (#{shows} at /dest)"
+      assert second_log =~ "not passed to #{move.name} /dest (#{shows} at /dest), outside every mount: #{moved}"
     end
 
     test "one that runs only on files is skipped when there are none; a disabled one never runs" do
@@ -516,7 +538,9 @@ defmodule Contentoid.Downloads.RunnerTest do
       assert :ok = perform_job(Worker, %{download_id: download.id})
 
       assert [_downloaded, %{"Image" => "fake/post:always"}] = created_bodies()
-      assert %Download{status: :completed} = Downloads.get_download!(download.id)
+      # The disabled one is never listed.
+      assert %Download{status: :completed, steps: [%Step{status: :skipped}, %Step{status: :succeeded}]} =
+               Downloads.get_download!(download.id)
     end
 
     test "a failure fails the download and skips the rest; a retry runs only post-processing", %{root: root} do
@@ -535,13 +559,52 @@ defmodule Contentoid.Downloads.RunnerTest do
       assert message_text(message) == "#{failing.name}: ffmpeg failed"
       assert [_downloaded, %{"Image" => "fake/post:fail"}] = created_bodies()
 
-      assert %Download{status: :failed, phase: :post_processing, files: [^file], error: ^message} =
-               failed = Downloads.get_download!(download.id)
+      assert %Download{
+               status: :failed,
+               phase: :post_processing,
+               files: [^file],
+               error: ^message,
+               steps: [%Step{status: :failed, exit_status: 1, log: log}, %Step{status: :skipped}]
+             } = failed = Downloads.get_download!(download.id)
+
+      assert log =~ "ffmpeg failed"
 
       {:ok, _queued} = Downloads.retry_download(failed)
+      assert Downloads.get_download!(download.id).steps == []
       assert {:error, ^message} = perform_job(Worker, %{download_id: download.id})
       assert [%{"Image" => "fake/post:fail"}] = created_bodies()
-      assert %Download{files: [^file]} = Downloads.get_download!(download.id)
+
+      # Replaced, not appended.
+      assert %Download{files: [^file], steps: [%Step{status: :failed}, %Step{status: :skipped}]} =
+               Downloads.get_download!(download.id)
+    end
+
+    test "a post-processor that prints nothing shows as running, and its failure is its own" do
+      hang = post_processor_fixture(%{image: "fake/post:hang", priority: 10})
+      ok = post_processor_fixture(%{image: "fake/post:ok", priority: 1})
+      downloader = downloader_fixture(%{post_processor_assignments: assignments([hang, ok])})
+      {:ok, running} = Downloads.mark_running(download_fixture(%{downloader_id: downloader.id}))
+      run = Task.async(fn -> Runner.run(running) end)
+
+      # Saved before its container started, though it never prints a line.
+      assert_receive {:docker, :created, %{"Image" => "fake/post:hang"}}, 1_000
+
+      assert %Download{
+               status: :running,
+               steps: [%Step{status: :running, started_at: %DateTime{}, log: nil}, %Step{status: :pending}]
+             } = Downloads.get_download!(running.id)
+
+      assert {:ok, 1} = Docker.remove_all()
+      assert {:error, message} = Task.await(run)
+      assert message_text(message) == "#{hang.name}: exited with status 137"
+
+      assert %Download{
+               status: :failed,
+               steps: [%Step{status: :failed, exit_status: 137}, %Step{status: :skipped}],
+               log: downloader_log
+             } = Downloads.get_download!(running.id)
+
+      refute downloader_log =~ "=="
     end
 
     test "removed files leave the download's files" do
@@ -551,6 +614,18 @@ defmodule Contentoid.Downloads.RunnerTest do
 
       assert :ok = perform_job(Worker, %{download_id: download.id})
       assert %Download{status: :completed, files: []} = Downloads.get_download!(download.id)
+    end
+
+    # Its label, shown as the progress text while it runs, is the post-processor's name and all its
+    # arguments: an rsync pair list runs to thousands of characters.
+    test "a run with a long list of arguments runs" do
+      ok = post_processor_fixture(%{image: "fake/post:ok"})
+      pairs = Enum.map_join(1..40, " ", &~s(user#{&1} "/mnt/private/synced/user #{&1}/ofscraper"))
+      downloader = downloader_fixture(%{post_processor_assignments: assignments([{ok, pairs}])})
+      download = download_fixture(%{downloader_id: downloader.id})
+
+      assert :ok = perform_job(Worker, %{download_id: download.id})
+      assert %Download{status: :completed, steps: [%Step{status: :succeeded}]} = Downloads.get_download!(download.id)
     end
   end
 

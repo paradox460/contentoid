@@ -26,4 +26,13 @@ defmodule ContentoidWeb.Format do
   def download_status(:completed), do: gettext("Completed")
   def download_status(:failed), do: gettext("Failed")
   def download_status(:cancelled), do: gettext("Cancelled")
+
+  @doc "A `Contentoid.Downloads.Download.Step` status, for display."
+  @spec step_status(atom()) :: String.t()
+  def step_status(:pending), do: gettext("Waiting")
+  def step_status(:running), do: gettext("Running")
+  def step_status(:succeeded), do: gettext("Succeeded")
+  def step_status(:failed), do: gettext("Failed")
+  def step_status(:skipped), do: gettext("Skipped")
+  def step_status(:cancelled), do: gettext("Cancelled")
 end

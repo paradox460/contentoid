@@ -17,7 +17,8 @@ defmodule Contentoid.FakeDocker do
   A post-processor's image `fake/post:KIND` acts on its files (`CONTENTOID_FILES`) instead:
   `move` reports each moved into the directory its first argument names (`/library` without one),
   `remove` reports each removed, `transcode` reports a new `/contentoid/output/video.mkv`, `fail`
-  reports `ffmpeg failed` and exits 1, and anything else logs `ok` and exits 0.
+  reports `ffmpeg failed` and exits 1, `hang` streams nothing until stopped or removed (137), and
+  anything else logs `ok` and exits 0.
 
   Output comes as multiplexed frames over several chunks, cut mid-frame.
 
@@ -241,6 +242,9 @@ defmodule Contentoid.FakeDocker do
 
       "fail" ->
         {[{2, report(%{error: "ffmpeg failed"})}], 1}
+
+      "hang" ->
+        :hang
 
       _ok ->
         {[{1, "ok\n"}], 0}

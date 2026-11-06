@@ -11,6 +11,7 @@ defmodule ContentoidWeb.DownloadsLiveTest do
   alias Contentoid.Downloaders
   alias Contentoid.Downloads
   alias Contentoid.Downloads.Download
+  alias Contentoid.Downloads.Download.Step
   alias Contentoid.Downloads.Queues
   alias Contentoid.Downloads.Slots
   alias Contentoid.Downloads.Worker
@@ -229,6 +230,42 @@ defmodule ContentoidWeb.DownloadsLiveTest do
 
     assert %{status: :queued} = Downloads.get_download!(failed.id)
     assert has_element?(view, "#download-#{failed.id}", "Queued")
+  end
+
+  test "shows the downloader's log and each post-processor's under its own heading", %{conn: conn} do
+    {:ok, running} = Downloads.mark_running(download_fixture())
+    Downloads.record_progress(running, phase: :post_processing, log: "fetched video.mp4")
+
+    steps = [
+      %Step{
+        name: "Move",
+        status: :succeeded,
+        started_at: ~U[2026-11-05 10:00:00Z],
+        finished_at: ~U[2026-11-05 10:00:42Z],
+        exit_status: 0,
+        log: "moved video.mp4"
+      },
+      %Step{
+        name: "Transcode",
+        status: :failed,
+        started_at: ~U[2026-11-05 10:00:42Z],
+        finished_at: ~U[2026-11-05 10:01:00Z],
+        exit_status: 1,
+        log: "ffmpeg failed"
+      },
+      %Step{name: "Dedupe", status: :pending}
+    ]
+
+    Downloads.finish(running, status: :failed, error: Contentoid.Message.text("ffmpeg failed"), steps: steps)
+    {:ok, view, _html} = live(conn, ~p"/downloads/#{running}")
+    id = running.id
+
+    assert has_element?(view, "#download-#{id}-step-download-succeeded .download-log", "fetched video.mp4")
+    assert has_element?(view, "#download-#{id}-step-0-succeeded", "Move")
+    refute has_element?(view, "#download-#{id}-step-0-succeeded[open]")
+    assert has_element?(view, "#download-#{id}-step-1-failed[open] .download-log", "ffmpeg failed")
+    # A finished download's pending step never ran.
+    assert has_element?(view, "#download-#{id}-step-2-skipped", "Dedupe")
   end
 
   test "a download that failed in post-processing offers to retry only that", %{conn: conn} do

@@ -15,6 +15,9 @@ defmodule Contentoid.Downloads.Download do
   (`Contentoid.PostProcessors.for_download/1`) apply; `output_dir` is then the output mount's host
   directory. A download in phase `post_processing` has already downloaded: a retry runs only
   post-processing, on its files.
+
+  `steps` holds each post-processor run of the latest post-processing attempt, and `log` is only
+  the downloader's output.
   """
   use Contentoid.Schema
   use Gettext, backend: ContentoidWeb.Gettext
@@ -23,6 +26,7 @@ defmodule Contentoid.Downloads.Download do
 
   alias Contentoid.Downloaders
   alias Contentoid.Downloaders.Downloader
+  alias Contentoid.Downloads.Download.Step
   alias Contentoid.Schedules.Schedule
 
   @type t :: %__MODULE__{}
@@ -59,6 +63,8 @@ defmodule Contentoid.Downloads.Download do
     field :files, {:array, :string}, default: []
     embeds_one :error, Contentoid.Message, on_replace: :delete
     field :log, :string
+    # Post-processing's runs (Step); `log` is the downloader's own output only.
+    embeds_many :steps, Step, on_replace: :delete
     field :exit_status, :integer
     field :oban_job_id, :integer
     field :started_at, :utc_datetime

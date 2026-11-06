@@ -26,6 +26,7 @@ defmodule ContentoidWeb.DownloadsLive do
   alias Contentoid.Downloads
   alias Contentoid.Downloads.Docker
   alias Contentoid.Downloads.Download
+  alias Contentoid.Downloads.Download.Step
   alias Contentoid.Schedules
   alias ContentoidWeb.Timezone
 
@@ -710,6 +711,79 @@ defmodule ContentoidWeb.DownloadsLive do
         overflow-wrap: anywhere;
       }
 
+      .download-steps {
+        display: grid;
+        border: 1px solid var(--border);
+        background: var(--surface-1);
+      }
+
+      /* Open Props' normalize pads and fills details and summary; a step is flat. */
+      .download-step {
+        padding: 0;
+        background: none;
+      }
+
+      .download-step + .download-step {
+        border-block-start: 1px solid var(--border);
+      }
+
+      .download-step-summary {
+        display: flex;
+        align-items: center;
+        gap: var(--size-2);
+        padding: var(--size-1) var(--size-2);
+      }
+
+      summary.download-step-summary {
+        margin: 0;
+        background: none;
+        cursor: pointer;
+      }
+
+      .download-step-status {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--size-1);
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+
+      .download-step-status--pending .iconex,
+      .download-step-status--skipped .iconex,
+      .download-step-status--cancelled .iconex {
+        color: var(--muted-foreground);
+      }
+
+      .download-step-status--running .iconex {
+        color: var(--primary);
+      }
+
+      .download-step-status--succeeded .iconex {
+        color: var(--success);
+      }
+
+      .download-step-status--failed .iconex {
+        color: var(--destructive);
+      }
+
+      .download-step-time {
+        margin-inline-start: auto;
+        color: var(--muted-foreground);
+      }
+
+      .download-step .download-log {
+        max-inline-size: none;
+        border: none;
+        border-block-start: 1px solid var(--border);
+      }
+
+      .download-step-empty {
+        margin: 0;
+        max-inline-size: none;
+        padding: var(--size-1) var(--size-2);
+        border-block-start: 1px solid var(--border);
+      }
+
       @media (--phone) {
         .download-form {
           grid-template-columns: minmax(0, 1fr);
@@ -924,13 +998,29 @@ defmodule ContentoidWeb.DownloadsLive do
         </li>
       </ul>
 
-      <pre
-        :if={@download.log}
-        id={"download-log-#{@download.id}"}
-        class="download-log"
+      <section
+        :if={@download.log || @download.steps != []}
+        class="download-steps"
         aria-label={gettext("Log")}
-        phx-hook=".FollowLog"
-      >{@download.log}</pre>
+      >
+        <.step
+          id={"download-#{@download.id}-step-download"}
+          name={@download.downloader_name}
+          status={downloader_step_status(@download)}
+          log={@download.log}
+          open={@download.steps == [] or downloader_step_status(@download) in [:running, :failed]}
+        />
+        <.step
+          :for={{step, index} <- Enum.with_index(@download.steps)}
+          id={"download-#{@download.id}-step-#{index}"}
+          name={step.name}
+          status={shown_step_status(step, @download)}
+          log={step.log}
+          started_at={step.started_at}
+          finished_at={step.finished_at}
+          open={shown_step_status(step, @download) in [:running, :failed]}
+        />
+      </section>
       <script :type={Phoenix.LiveView.ColocatedHook} name=".FollowLog">
         // The log grows while a download runs: keep its newest line in view, unless the reader
         // scrolled up to read something.
@@ -948,6 +1038,104 @@ defmodule ContentoidWeb.DownloadsLive do
         };
       </script>
     </section>
+    """
+  end
+
+  # The downloader's own run, as a step: done once the download got to post-processing.
+  defp downloader_step_status(%Download{phase: :post_processing}), do: :succeeded
+  defp downloader_step_status(%Download{status: :queued}), do: :pending
+  defp downloader_step_status(%Download{status: :completed}), do: :succeeded
+  # :running, :failed or :cancelled.
+  defp downloader_step_status(%Download{status: status}), do: status
+
+  # A cancel (or a crash) leaves the step it stopped at running and the rest pending; only the
+  # runner writes steps.
+  defp shown_step_status(%Step{status: :running}, %Download{status: status}) when status != :running, do: :cancelled
+  defp shown_step_status(%Step{status: :pending}, %Download{status: status}) when status != :running, do: :skipped
+  defp shown_step_status(%Step{status: status}, _download), do: status
+
+  attr :id, :string,
+    required: true,
+    doc:
+      "its prefix; the status is appended, so a change of status renders it anew, opened or closed as that status calls for. Until then `open` is the reader's: log updates don't patch it"
+
+  attr :name, :string, required: true
+  attr :status, :atom, required: true
+  attr :log, :string, default: nil
+  attr :started_at, DateTime, default: nil
+  attr :finished_at, DateTime, default: nil
+  attr :open, :boolean, default: false
+
+  # One run in the download's log: the downloader's or a post-processor's.
+  defp step(%{status: status} = assigns) when status in [:pending, :skipped] do
+    ~H"""
+    <div id={"#{@id}-#{@status}"} class="download-step">
+      <div class="download-step-summary">
+        <.step_heading
+          id={@id}
+          name={@name}
+          status={@status}
+          started_at={@started_at}
+          finished_at={@finished_at}
+        />
+      </div>
+    </div>
+    """
+  end
+
+  defp step(assigns) do
+    ~H"""
+    <details
+      id={"#{@id}-#{@status}"}
+      class="download-step"
+      open={@open}
+      phx-mounted={JS.ignore_attributes("open")}
+    >
+      <summary class="download-step-summary">
+        <.step_heading
+          id={@id}
+          name={@name}
+          status={@status}
+          started_at={@started_at}
+          finished_at={@finished_at}
+        />
+      </summary>
+      <pre :if={@log} id={"#{@id}-#{@status}-log"} class="download-log" phx-hook=".FollowLog">{@log}</pre>
+      <p :if={!@log} class="download-muted download-step-empty">
+        {if @status == :running, do: gettext("No output yet."), else: gettext("No output.")}
+      </p>
+    </details>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :name, :string, required: true
+  attr :status, :atom, required: true
+  attr :started_at, :any, required: true, doc: "a `DateTime`, or nil"
+  attr :finished_at, :any, required: true, doc: "a `DateTime`, or nil"
+
+  defp step_heading(assigns) do
+    ~H"""
+    <span class={["download-step-status", "download-step-status--#{@status}"]}>
+      <.lucide :if={@status == :pending} name="circle-dashed" />
+      <.lucide :if={@status == :running} name="loader" />
+      <.lucide :if={@status == :succeeded} name="check" />
+      <.lucide :if={@status == :failed} name="circle-x" />
+      <.lucide :if={@status == :skipped} name="circle-slash" />
+      <.lucide :if={@status == :cancelled} name="ban" />
+      <span class="download-step-name">{@name}</span>
+    </span>
+    <span class="download-muted">{step_status(@status)}</span>
+    <span class="download-step-time">
+      <%= cond do %>
+        <% @started_at && @finished_at -> %>
+          {duration(DateTime.diff(@finished_at, @started_at))}
+        <% @started_at && @status == :running -> %>
+          {gettext("since")} <.local_time id={"#{@id}-#{@status}-started-at"} at={@started_at} />
+        <% true -> %>
+          {nil}
+      <% end %>
+    </span>
     """
   end
 

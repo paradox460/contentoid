@@ -439,9 +439,20 @@ defmodule Contentoid.Downloads do
 
   @doc false
   # `changes`: any of `progress`, `progress_text`, `total_progress`, `total_text`, `current_file`,
-  # `files`, `phase`, `output_dir`, `log`.
+  # `files`, `phase`, `output_dir`, `log`, `steps`.
   def record_progress(%Download{} = download, changes) do
-    fields = [:progress, :progress_text, :total_progress, :total_text, :current_file, :files, :phase, :output_dir, :log]
+    fields = [
+      :progress,
+      :progress_text,
+      :total_progress,
+      :total_text,
+      :current_file,
+      :files,
+      :phase,
+      :output_dir,
+      :log,
+      :steps
+    ]
 
     download
     |> where_status([:running])
@@ -450,9 +461,10 @@ defmodule Contentoid.Downloads do
 
   @doc false
   # `changes`: `status` (`:completed` or `:failed`) plus any of `progress`, `progress_text`, `files`,
-  # `error`, `log`, `exit_status`. The run's total and current file are only for while it runs.
+  # `error`, `log`, `exit_status`, `steps`. The run's total and current file are only for while it
+  # runs.
   def finish(%Download{} = download, changes) do
-    fields = [:status, :progress, :progress_text, :files, :error, :log, :exit_status]
+    fields = [:status, :progress, :progress_text, :files, :error, :log, :exit_status, :steps]
     ended = [finished_at: now(), total_progress: nil, total_text: nil, current_file: nil]
 
     download
@@ -583,7 +595,7 @@ defmodule Contentoid.Downloads do
   end
 
   # The fields a fresh run starts from. One that got to post-processing keeps its files, log, output
-  # directory and phase, so it starts at post-processing again and appends to the log.
+  # directory and phase, so it starts at post-processing again; its steps start over.
   defp reset(%Download{phase: :post_processing}, status) do
     [
       status: status,
@@ -595,7 +607,8 @@ defmodule Contentoid.Downloads do
       error: nil,
       exit_status: nil,
       started_at: nil,
-      finished_at: nil
+      finished_at: nil,
+      steps: []
     ]
   end
 
@@ -612,7 +625,8 @@ defmodule Contentoid.Downloads do
       log: nil,
       exit_status: nil,
       started_at: nil,
-      finished_at: nil
+      finished_at: nil,
+      steps: []
     ]
   end
 

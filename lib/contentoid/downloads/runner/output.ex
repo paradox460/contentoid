@@ -24,9 +24,10 @@ defmodule Contentoid.Downloads.Runner.Output do
     :error,
     # The `Runner.Writer` saving this run's progress and log; set while the container runs.
     :writer,
-    # What the download's log already says before this container's lines (a post-processor's run
-    # follows the earlier output under its own heading); nil for the downloader.
-    log_prefix: nil,
+    # For a post-processor's run: its index in the download's steps, and the steps as it started
+    # (the writer saves its log into them); nil and [] for the downloader.
+    step: nil,
+    steps: [],
     buffer: "",
     files: [],
     log: [],

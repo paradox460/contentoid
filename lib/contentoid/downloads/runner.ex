@@ -15,8 +15,10 @@ defmodule Contentoid.Downloads.Runner do
   When the script exits 0 and post-processors apply (`Contentoid.PostProcessors.for_download/1`),
   the download moves to phase `post_processing` and each runs in turn in its own container, in the
   same job (`Contentoid.PostProcessors.PostProcessor` has the script contract). They see the
-  download's current files, and report moves, removals and new files back. The first to fail fails
-  the download and skips the rest; a retry then starts again at post-processing, with the files.
+  download's current files, and report moves, removals and new files back; each is a step of the
+  download (`Download.Step`), saved as planned, when it starts and as its output arrives, so a run
+  that hangs or prints nothing still shows as running. The first to fail fails the download and
+  skips the rest; a retry then starts again at post-processing, with the files.
 
   A container outlives whoever started it, so each run has a watchdog that removes the container if
   the runner dies before the run ends (Oban kills a cancelled job's process); removing the container
@@ -32,6 +34,7 @@ defmodule Contentoid.Downloads.Runner do
   alias Contentoid.Downloads
   alias Contentoid.Downloads.Docker
   alias Contentoid.Downloads.Download
+  alias Contentoid.Downloads.Download.Step
   alias Contentoid.Downloads.Protocol
   alias Contentoid.Downloads.Runner.Output
   alias Contentoid.Downloads.Runner.Writer
@@ -271,16 +274,19 @@ defmodule Contentoid.Downloads.Runner do
       total_progress: output.total_progress,
       total_text: output.total_text,
       current_file: output.current_file,
-      files: Enum.reverse(output.files),
-      log: log_text(output)
-    ]
+      files: Enum.reverse(output.files)
+    ] ++ log_changes(output)
   end
 
-  # The download's whole log: what came before this container, then its last `log_lines` lines.
-  defp log_text(output) do
-    lines = output.log |> Enum.take(output.log_lines) |> Enum.reverse() |> Enum.join("\n")
-    Enum.join(Enum.reject([output.log_prefix, lines], &(&1 in [nil, ""])), "\n")
-  end
+  # The downloader's log is the download's; a post-processor's goes into its step.
+  defp log_changes(%Output{step: nil} = output), do: [log: log_text(output)]
+
+  defp log_changes(%Output{step: index, steps: steps} = output),
+    do: [steps: put_step(steps, index, log: log_text(output))]
+
+  # This container's last `log_lines` lines; nil when it printed nothing.
+  defp log_text(%Output{log: []}), do: nil
+  defp log_text(output), do: output.log |> Enum.take(output.log_lines) |> Enum.reverse() |> Enum.join("\n")
 
   defp last_log_line(%{log: [line | _]}), do: line
   defp last_log_line(_output), do: nil
@@ -297,18 +303,30 @@ defmodule Contentoid.Downloads.Runner do
 
   defp named(name, reason), do: Message.new(gettext_noop("%{name}: %{reason}"), name: name, reason: reason)
 
-  # Each assigned post-processor in turn on the download's current files, until one fails.
+  # Each assigned post-processor in turn on the download's current files, until one fails. Every
+  # run is planned as a step first, so the download shows what's still to come.
   defp post_process(download, assignments) do
+    steps = Enum.map(assignments, &%Step{name: label(&1), status: :pending})
+
+    case Downloads.record_progress(download, steps: steps) do
+      nil -> {:error, no_longer_running()}
+      download -> run_steps(download, assignments)
+    end
+  end
+
+  defp run_steps(download, assignments) do
     assignments
-    |> Enum.reduce_while({:ok, download}, fn %Assignment{post_processor: post_processor} = assignment,
+    |> Enum.with_index()
+    |> Enum.reduce_while({:ok, download}, fn {%Assignment{post_processor: post_processor} = assignment, index},
                                              {:ok, download} ->
-      if post_processor.trigger == :new_files and download.files == [] do
-        {:cont, {:ok, download}}
-      else
-        case run_post_processor(download, assignment) do
-          {:ok, download} -> {:cont, {:ok, download}}
-          {:error, _message} = error -> {:halt, error}
-        end
+      result =
+        if post_processor.trigger == :new_files and download.files == [],
+          do: skip_step(download, index),
+          else: run_post_processor(download, assignment, index)
+
+      case result do
+        {:ok, download} -> {:cont, {:ok, download}}
+        {:error, _message} = error -> {:halt, error}
       end
     end)
     |> case do
@@ -321,9 +339,23 @@ defmodule Contentoid.Downloads.Runner do
     end
   end
 
+  defp skip_step(download, index) do
+    case Downloads.record_progress(download, steps: put_step(download.steps, index, status: :skipped)) do
+      nil -> {:error, no_longer_running()}
+      download -> {:ok, download}
+    end
+  end
+
+  defp put_step(steps, index, changes), do: List.update_at(steps, index, &struct!(&1, changes))
+
+  defp skip_pending(steps), do: Enum.map(steps, &if(&1.status == :pending, do: %{&1 | status: :skipped}, else: &1))
+
+  # `:utc_datetime` holds whole seconds.
+  defp now, do: DateTime.utc_now(:second)
+
   # The script gets the assignment's arguments as "$@" and the files in CONTENTOID_FILES, one per
   # line; the assignment's mounts are bound after the post-processor's own.
-  defp run_post_processor(download, %Assignment{post_processor: %PostProcessor{} = post_processor} = assignment) do
+  defp run_post_processor(download, %Assignment{post_processor: %PostProcessor{} = post_processor} = assignment, index) do
     name = label(assignment)
     mounts = post_processor.mounts ++ assignment.mounts
 
@@ -339,36 +371,61 @@ defmodule Contentoid.Downloads.Runner do
               download: download,
               binds: path_map,
               log_lines: Settings.get_settings().log_lines,
-              log_prefix: Enum.join(Enum.reject([download.log, "== #{name} =="], &(&1 in [nil, ""])), "\n"),
+              step: index,
               progress_text: "Post-processing: #{name}",
               files: Enum.reverse(download.files)
             } do
           output -> log(output, "not passed to #{name}, outside every mount: #{host}")
         end
 
-      Downloads.record_progress(download, progress: nil, progress_text: "Post-processing: #{name}")
+      # Saved before the container starts, so a run that hangs or prints nothing shows as running.
+      steps = put_step(download.steps, index, status: :running, started_at: now(), log: log_text(output))
 
-      env =
-        [
-          "CONTENTOID_ARGUMENTS=#{assignment.arguments}",
-          "CONTENTOID_OUTPUT=#{PostProcessor.output_target()}",
-          "CONTENTOID_DOWNLOAD_ID=#{download.id}",
-          "CONTENTOID_DOWNLOADER=#{download.downloader_name}",
-          "CONTENTOID_FILES=#{Enum.join(container_files, "\n")}",
-          # Host path, tab, container path, a line per bind (the output first), so a script can take
-          # host paths as arguments.
-          "CONTENTOID_MOUNTS=#{Enum.map_join(path_map, "\n", fn {host, target} -> "#{host}\t#{target}" end)}"
-        ] ++ download_input_env(download)
+      case Downloads.record_progress(download, progress: nil, progress_text: "Post-processing: #{name}", steps: steps) do
+        nil ->
+          {:error, no_longer_running()}
 
-      container = container(post_processor.image, post_processor.script, Assignment.argv(assignment), env, binds)
+        download ->
+          env =
+            [
+              "CONTENTOID_ARGUMENTS=#{assignment.arguments}",
+              "CONTENTOID_OUTPUT=#{PostProcessor.output_target()}",
+              "CONTENTOID_DOWNLOAD_ID=#{download.id}",
+              "CONTENTOID_DOWNLOADER=#{download.downloader_name}",
+              "CONTENTOID_FILES=#{Enum.join(container_files, "\n")}",
+              # Host path, tab, container path, a line per bind (the output first), so a script can
+              # take host paths as arguments.
+              "CONTENTOID_MOUNTS=#{Enum.map_join(path_map, "\n", fn {host, target} -> "#{host}\t#{target}" end)}"
+            ] ++ download_input_env(download)
 
-      case run_container(download, container, output, post_processor.files) do
-        {:error, message} -> fail(download, named(name, message))
-        {output, exit_status} -> post_processed(download, name, output, exit_status)
+          container = container(post_processor.image, post_processor.script, Assignment.argv(assignment), env, binds)
+          output = %{output | download: download, steps: download.steps}
+
+          case run_container(download, container, output, post_processor.files) do
+            {:error, message} -> fail_step(download, index, named(name, message), nil)
+            {output, exit_status} -> post_processed(download, index, name, output, exit_status)
+          end
       end
     else
-      {:error, message} -> fail(download, named(name, message))
+      {:error, message} -> fail_step(download, index, named(name, message), nil)
     end
+  end
+
+  # The step failed before or without a container exit; it and the download fail, the rest are
+  # skipped.
+  defp fail_step(download, index, message, exit_status) do
+    at = now()
+
+    steps =
+      download.steps
+      |> List.update_at(
+        index,
+        &%{&1 | status: :failed, started_at: &1.started_at || at, finished_at: at, exit_status: exit_status}
+      )
+      |> skip_pending()
+
+    Downloads.finish(download, status: :failed, error: message, steps: steps)
+    {:error, message}
   end
 
   # How a run is named in the log, its progress and errors: the post-processor, then its arguments
@@ -387,19 +444,23 @@ defmodule Contentoid.Downloads.Runner do
       else: {:error, Message.new(gettext_noop("the output directory %{dir} doesn't exist"), dir: dir)}
   end
 
-  # The post-processor's log follows the download's, under a heading of its own (`log_prefix`).
-  defp post_processed(download, name, output, exit_status) do
-    log = log_text(output)
+  # The run's outcome and log go into its step.
+  defp post_processed(download, index, name, output, exit_status) do
     files = Enum.reverse(output.files)
+    done = [finished_at: now(), exit_status: exit_status, log: log_text(output)]
 
     if exit_status == 0 do
-      case Downloads.record_progress(download, files: files, log: log) do
+      case Downloads.record_progress(download,
+             files: files,
+             steps: put_step(output.steps, index, [status: :succeeded] ++ done)
+           ) do
         nil -> {:error, no_longer_running()}
         updated -> {:ok, updated}
       end
     else
       message = named(name, failure_message(output, exit_status))
-      Downloads.finish(download, status: :failed, error: message, exit_status: exit_status, files: files, log: log)
+      steps = output.steps |> put_step(index, [status: :failed] ++ done) |> skip_pending()
+      Downloads.finish(download, status: :failed, error: message, exit_status: exit_status, files: files, steps: steps)
       {:error, message}
     end
   end
