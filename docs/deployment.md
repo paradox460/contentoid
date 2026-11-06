@@ -96,7 +96,7 @@ bind-mounted into Contentoid's container **at the same path**:
 | `ECTO_IPV6` | no | `true` to reach the database over IPv6 |
 | `FORCE_SSL` | no | Default `true`: plain HTTP redirects to HTTPS (below). `false` serves plain HTTP on `PORT` |
 | `DOWNLOAD_DIR` | no | The default download directory until Settings names one. Absolute, mounted at the same path (§2) |
-| `DEFAULT_LOCALE` | no | BCP 47 tag (`de`, `pt-BR`) for number and date formats and, once translations ship, text, when a browser's `Accept-Language` names no locale Contentoid has. Default `en` |
+| `DEFAULT_LOCALE` | no | BCP 47 tag (`de`, `pt-BR`) for number and date formats, and text when it's a translated language (`en`, `es`), when a browser's `Accept-Language` names no locale Contentoid has. Default `en` |
 
 ### HTTPS
 

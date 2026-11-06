@@ -234,11 +234,18 @@ radius, flat surfaces, Iosevka, icon stroke width) and the contrast constraints 
 ### Locale and translation
 
 - Every user-visible string goes through Gettext (`gettext`, `ngettext`; changeset messages
-  `dgettext_noop("errors", …)` with values as error opts). Each text run around markup or a code
-  literal is its own msgid; never concatenate translated pieces. Plurals bind a formatted
-  `%{number}`, never `%{count}`. `priv/gettext/*.pot` and the `en` `.po` files are committed;
-  `mix precommit` fails when `mix gettext.extract --merge` would change them. Never call `gettext`
-  at compile time (module attributes).
+  `dgettext_noop("errors", …)` with values as error opts). A msgid is a whole sentence (or a whole
+  label): never split one around markup and never concatenate translated pieces, since translators
+  must be able to reorder it. Code inside a sentence is a `%{name}` binding wrapped in `code/1`,
+  rendered by `rich/1` (`ContentoidWeb.RichText`, imported in `html_helpers`):
+  `{rich(gettext("The URL is %{url}.", url: code("$CONTENTOID_URL")))}`. A short string whose
+  meaning or grammar depends on where it sits (a status, a placeholder, a column label) gets a
+  `pgettext` context saying what it describes, e.g. `pgettext("download status", "Failed")` apart
+  from `pgettext("post-processor run status", "Failed")`. Plurals bind a formatted `%{number}`,
+  never `%{count}`. `priv/gettext/*.pot` and the `.po` files are committed; `mix precommit` fails
+  when `mix gettext.extract --merge` would change them (merge with `--no-fuzzy`, so a reworded
+  msgid isn't matched to an unrelated old one). Never call `gettext` at compile time (module
+  attributes).
 - Numbers, percents and durations shown go through `ContentoidWeb.Format` (`number/1`,
   `percent/1`, `duration/1`, `download_status/1`), CLDR via `localize`, in the request's locale.
 - The locale is the browser's `Accept-Language` best match among CLDR "modern" locales, else

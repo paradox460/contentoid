@@ -148,7 +148,8 @@ defmodule ContentoidWeb.SettingsLive do
           <.help id="download-dir-status">
             <%= case @download_dir_status do %>
               <% {:ok, dir} -> %>
-                {gettext("In use:")} <code>{dir}</code>. {gettext(
+                {rich(gettext("In use: %{path}.", path: code(dir)))}
+                {gettext(
                   "Relative mount sources, such as the default downloaders' output directories, resolve under it."
                 )}
               <% {:error, message} -> %>
@@ -168,22 +169,27 @@ defmodule ContentoidWeb.SettingsLive do
           <.input
             field={@form[:docker_socket]}
             label={gettext("Docker socket")}
-            placeholder={gettext("Detected")}
+            placeholder={pgettext("Docker socket field, when blank", "Detected")}
             autocomplete="off"
             spellcheck="false"
           />
           <.help id="docker-socket-status">
             <%= case @docker_socket_status do %>
               <% {:ok, path} -> %>
-                {gettext("In use:")} <code>{path}</code>.
+                {rich(gettext("In use: %{path}.", path: code(path)))}
               <% {:error, message} -> %>
                 {message_text(message)}.
             <% end %>
-            {gettext("Blank:")} <code>DOCKER_HOST</code>
-            {gettext("when it's")} <code>unix://…</code>, {gettext(
-              "else the first of these that exists:"
+            {rich(
+              gettext(
+                "Blank: %{env} when it's %{unix}, else the first of these that exists: %{first}, %{second}, %{third}.",
+                env: code("DOCKER_HOST"),
+                unix: code("unix://…"),
+                first: code("/var/run/docker.sock"),
+                second: code("~/.docker/run/docker.sock"),
+                third: code("~/.orbstack/run/docker.sock")
+              )
             )}
-            <code>/var/run/docker.sock</code>, <code>~/.docker/run/docker.sock</code>, <code>~/.orbstack/run/docker.sock</code>.
           </.help>
 
           <div class="settings-row">

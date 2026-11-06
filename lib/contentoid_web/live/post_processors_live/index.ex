@@ -104,7 +104,7 @@ defmodule ContentoidWeb.PostProcessorsLive.Index do
           <:col :let={{_id, post_processor}} label={gettext("Priority")}>
             {number(post_processor.priority)}
           </:col>
-          <:col :let={{_id, post_processor}} label={gettext("Runs")}>
+          <:col :let={{_id, post_processor}} label={pgettext("when a post-processor runs", "Runs")}>
             {trigger_label(post_processor.trigger)}
           </:col>
           <:col :let={{_id, post_processor}} label={gettext("Image")}>

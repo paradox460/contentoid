@@ -6,7 +6,7 @@ defmodule ContentoidWeb.Locale do
   `Localize.Plug.PutLocale` in the router's `:browser` pipeline picks it for every request and
   `Localize.Plug.PutSession` saves it, so `on_mount/4` (attached in `ContentoidWeb.live_view/0`) can
   set it in the LiveView process. Numbers and dates follow it in any CLDR locale; Gettext gets the
-  closest locale it has translations for, English until others ship.
+  closest locale it has translations for (`en`, `es`, in `priv/gettext/`), else English.
   """
 
   def on_mount(:default, _params, session, socket) do

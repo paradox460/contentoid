@@ -88,6 +88,7 @@ defmodule ContentoidWeb do
       import ContentoidWeb.Format
       import ContentoidWeb.LocalTime, only: [local_time: 1]
       import ContentoidWeb.Messages
+      import ContentoidWeb.RichText
       import Iconex, only: [lucide: 1, hint: 2]
       import Phoenix.HTML
 

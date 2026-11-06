@@ -249,7 +249,7 @@ defmodule ContentoidWeb.DownloadersLive.Form do
             <.input
               field={@form[:input]}
               type="select"
-              label={gettext("Takes")}
+              label={pgettext("what a downloader is given", "Takes")}
               options={[
                 {gettext("A URL its pattern matches"), :url},
                 {gettext("Arguments, from a schedule"), :arguments}
@@ -309,20 +309,36 @@ defmodule ContentoidWeb.DownloadersLive.Form do
               />
             </div>
             <.help>
-              {gettext("The URL is")} <code>$CONTENTOID_URL</code>
-              ({gettext("and")} <code>$1</code>); {gettext("a schedule's arguments are")}
-              <code>"$@"</code>, {gettext("split as a shell would")} ({gettext("and")}
-              <code>$CONTENTOID_ARGUMENTS</code>
-              {gettext("as written).")} {gettext("The output mount's path is")}
-              <code>$CONTENTOID_OUTPUT</code>. {gettext(
-                "Report with one JSON object per line, named by its"
-              )} <code>"contentoid"</code>
-              {gettext("key:")} <code>progress</code>
-              (<code>percent</code>, <code>text</code>), <code>total</code>
-              (<code>done</code>, <code>of</code>), <code>start</code>
-              {gettext("and")} <code>file</code>
-              (<code>path</code>, {gettext("optional")} <code>url</code>), <code>error</code>
-              (<code>message</code>).
+              {rich(
+                gettext(
+                  "The URL is %{url} (and %{first}); a schedule's arguments are %{args}, split as a shell would (and %{arguments} as written).",
+                  url: code("$CONTENTOID_URL"),
+                  first: code("$1"),
+                  args: code(~s("$@")),
+                  arguments: code("$CONTENTOID_ARGUMENTS")
+                )
+              )}
+              {rich(
+                gettext("The output mount's path is %{output}.", output: code("$CONTENTOID_OUTPUT"))
+              )}
+              {rich(
+                gettext(
+                  "Report with one JSON object per line, named by its %{key} key: %{progress} (%{percent}, %{text}), %{total} (%{done}, %{of}), %{start} and %{file} (%{path}, optional %{url}), %{error} (%{message}).",
+                  key: code(~s("contentoid")),
+                  progress: code("progress"),
+                  percent: code("percent"),
+                  text: code("text"),
+                  total: code("total"),
+                  done: code("done"),
+                  of: code("of"),
+                  start: code("start"),
+                  file: code("file"),
+                  path: code("path"),
+                  url: code("url"),
+                  error: code("error"),
+                  message: code("message")
+                )
+              )}
             </.help>
           </fieldset>
 
@@ -390,7 +406,7 @@ defmodule ContentoidWeb.DownloadersLive.Form do
     """
   end
 
-  defp try_label(:match), do: gettext("Matches")
-  defp try_label(:no_match), do: gettext("Doesn't match")
+  defp try_label(:match), do: pgettext("the URL pattern, tried on a URL", "Matches")
+  defp try_label(:no_match), do: pgettext("the URL pattern, tried on a URL", "Doesn't match")
   defp try_label(:invalid), do: gettext("Pattern doesn't compile")
 end

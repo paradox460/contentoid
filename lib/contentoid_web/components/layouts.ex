@@ -158,7 +158,13 @@ defmodule ContentoidWeb.Layouts do
       }
     </style>
     <div>
-      <nav id="app-nav" class="app-nav" aria-label={gettext("Main")} popover phx-hook=".NavDrawer">
+      <nav
+        id="app-nav"
+        class="app-nav"
+        aria-label={pgettext("navigation", "Main")}
+        popover
+        phx-hook=".NavDrawer"
+      >
         <.link navigate={~p"/downloads"} class="app-nav-brand">
           <.lucide name="download" /> Contentoid
         </.link>

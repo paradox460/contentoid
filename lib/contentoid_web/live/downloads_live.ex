@@ -896,7 +896,7 @@ defmodule ContentoidWeb.DownloadsLive do
 
         <section id="finished" class="downloads-section" aria-labelledby="finished-heading">
           <div class="downloads-section-head">
-            <h2 id="finished-heading">{gettext("Finished")}</h2>
+            <h2 id="finished-heading">{pgettext("finished downloads, a heading", "Finished")}</h2>
             <span class="downloads-section-note">{gettext("Most recent first")}</span>
             <.button
               :if={@finished?}
@@ -956,9 +956,9 @@ defmodule ContentoidWeb.DownloadsLive do
         <dd :if={@schedule}>
           <.link navigate={~p"/schedules/#{@schedule}/edit"}>{@schedule.name}</.link>
         </dd>
-        <dt>{gettext("Queued")}</dt>
+        <dt>{pgettext("when a download was queued", "Queued")}</dt>
         <dd><.local_time id="download-queued-at" at={@download.inserted_at} /></dd>
-        <dt :if={Downloads.deferred?(@download)}>{gettext("Starts")}</dt>
+        <dt :if={Downloads.deferred?(@download)}>{pgettext("when a download starts", "Starts")}</dt>
         <dd :if={Downloads.deferred?(@download)}>
           <form id="start-at-form" class="download-start-form" phx-submit="reschedule">
             <input type="hidden" name="download_id" value={@download.id} />
@@ -973,11 +973,11 @@ defmodule ContentoidWeb.DownloadsLive do
             <.button size="sm" type="submit">{gettext("Save")}</.button>
           </form>
         </dd>
-        <dt :if={@download.started_at}>{gettext("Started")}</dt>
+        <dt :if={@download.started_at}>{pgettext("when a download started", "Started")}</dt>
         <dd :if={@download.started_at}>
           <.local_time id="download-started-at" at={@download.started_at} />
         </dd>
-        <dt :if={@download.finished_at}>{gettext("Finished")}</dt>
+        <dt :if={@download.finished_at}>{pgettext("when a download finished", "Finished")}</dt>
         <dd :if={@download.finished_at}>
           <.local_time id="download-finished-at" at={@download.finished_at} />
         </dd>
@@ -1131,7 +1131,8 @@ defmodule ContentoidWeb.DownloadsLive do
         <% @started_at && @finished_at -> %>
           {duration(DateTime.diff(@finished_at, @started_at))}
         <% @started_at && @status == :running -> %>
-          {gettext("since")} <.local_time id={"#{@id}-#{@status}-started-at"} at={@started_at} />
+          {pgettext("before the time a run started", "since")}
+          <.local_time id={"#{@id}-#{@status}-started-at"} at={@started_at} />
         <% true -> %>
           {nil}
       <% end %>
@@ -1163,7 +1164,11 @@ defmodule ContentoidWeb.DownloadsLive do
       <:col :let={{id, download}} :if={!@finished} label={gettext("Progress")}>
         <.progress id={id} download={download} />
       </:col>
-      <:col :let={{id, download}} :if={@finished} label={gettext("Finished")}>
+      <:col
+        :let={{id, download}}
+        :if={@finished}
+        label={pgettext("when a download finished", "Finished")}
+      >
         <span :if={download.finished_at} class="downloads-time">
           <.local_time id={"#{id}-finished-at"} at={download.finished_at} />
         </span>
@@ -1216,13 +1221,16 @@ defmodule ContentoidWeb.DownloadsLive do
 
     ~H"""
     <span :if={Downloads.deferred?(@download)} class="download-progress">
-      <.lucide name="calendar-clock" /> {gettext("Starts")}
+      <.lucide name="calendar-clock" /> {pgettext("when a download starts", "Starts")}
       <.local_time id={"#{@id}-start-at"} at={@download.start_at} />
     </span>
     <span :if={@download.status == :running} class="download-progress-rows">
       <span :if={@total?} class="download-progress download-progress--total">
-        <span class="download-progress-label">{gettext("Total")}</span>
-        <.progress_bar fraction={@download.total_progress} label={gettext("Total")} />
+        <span class="download-progress-label">{pgettext("progress of the whole download", "Total")}</span>
+        <.progress_bar
+          fraction={@download.total_progress}
+          label={pgettext("progress of the whole download", "Total")}
+        />
         <span :if={@download.total_progress}>{percent(@download.total_progress)}</span>
         <span :if={@download.total_text}>{@download.total_text}</span>
       </span>

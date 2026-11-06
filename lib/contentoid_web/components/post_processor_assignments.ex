@@ -68,12 +68,20 @@ defmodule ContentoidWeb.PostProcessorAssignments do
       <legend>{gettext("Post-processing")}</legend>
       <.help>
         {gettext(
-          "Run after each successful download, highest priority first, together with those of the schedule or downloader it came from. A priority here replaces the post-processor's own for these runs; blank keeps it. A post-processor's script gets its arguments as"
-        )} <code>"$@"</code>, {gettext("split as a shell would.")} {gettext(
-          "Mounts added here are bound for these runs on top of the post-processor's own (host paths that exist, not under"
-        )} <code>/contentoid</code>). {gettext(
-          "List one more than once to run it with different arguments or mounts."
+          "Run after each successful download, highest priority first, together with those of the schedule or downloader it came from. A priority here replaces the post-processor's own for these runs; blank keeps it."
         )}
+        {rich(
+          gettext("A post-processor's script gets its arguments as %{args}, split as a shell would.",
+            args: code(~s("$@"))
+          )
+        )}
+        {rich(
+          gettext(
+            "Mounts added here are bound for these runs on top of the post-processor's own (host paths that exist, not under %{reserved}).",
+            reserved: code("/contentoid")
+          )
+        )}
+        {gettext("List one more than once to run it with different arguments or mounts.")}
       </.help>
       <.inputs_for :let={assignment} field={@form[:post_processor_assignments]}>
         <div class="pp-assignment">
@@ -93,7 +101,7 @@ defmodule ContentoidWeb.PostProcessorAssignments do
             <.input
               field={assignment[:arguments]}
               label={gettext("Arguments")}
-              placeholder={gettext("none")}
+              placeholder={pgettext("arguments", "none")}
               autocomplete="off"
               spellcheck="false"
             />
@@ -101,7 +109,7 @@ defmodule ContentoidWeb.PostProcessorAssignments do
               field={assignment[:priority]}
               type="number"
               label={gettext("Priority")}
-              placeholder={gettext("its own")}
+              placeholder={pgettext("priority, when blank: the post-processor's", "its own")}
             />
             <.button
               icon

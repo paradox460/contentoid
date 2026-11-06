@@ -215,10 +215,18 @@ defmodule ContentoidWeb.SchedulesLive.Form do
             />
           </div>
           <.help>
-            {gettext("Minute, hour, day of month, month, day of week:")} <code>0 3 * * *</code>
-            {gettext("is 3:00 every day,")} <code>*/30 * * * *</code>
-            {gettext("every half hour,")} <code>0 9 * * 1-5</code>
-            {gettext("9:00 on weekdays. Or")} <code>@hourly</code>, <code>@daily</code>, <code>@weekly</code>, <code>@monthly</code>.
+            {rich(
+              gettext(
+                "Minute, hour, day of month, month, day of week: %{daily} is 3:00 every day, %{half_hourly} every half hour, %{weekdays} 9:00 on weekdays. Or %{hourly_alias}, %{daily_alias}, %{weekly_alias}, %{monthly_alias}.",
+                daily: code("0 3 * * *"),
+                half_hourly: code("*/30 * * * *"),
+                weekdays: code("0 9 * * 1-5"),
+                hourly_alias: code("@hourly"),
+                daily_alias: code("@daily"),
+                weekly_alias: code("@weekly"),
+                monthly_alias: code("@monthly")
+              )
+            )}
           </.help>
           <ul
             :if={@preview}
@@ -239,7 +247,7 @@ defmodule ContentoidWeb.SchedulesLive.Form do
             <.input
               field={@form[:jitter]}
               label={gettext("Random delay, up to (h:m:s)")}
-              placeholder={gettext("none")}
+              placeholder={pgettext("random delay", "none")}
               autocomplete="off"
               spellcheck="false"
             />
@@ -252,10 +260,14 @@ defmodule ContentoidWeb.SchedulesLive.Form do
             />
           </div>
           <.help>
-            {gettext("Each run starts a random time up to the delay after its run time, e.g.")}
-            <code>0:30:00</code>
+            {rich(
+              gettext(
+                "Each run starts a random time up to the delay after its run time, e.g. %{example} for anywhere in the next half hour, so schedules due together don't all start at once; Run now starts at once.",
+                example: code("0:30:00")
+              )
+            )}
             {gettext(
-              "for anywhere in the next half hour, so schedules due together don't all start at once; Run now starts at once. Waiting downloads start highest priority first (downloads queued by hand are 0); one already running is never stopped for a higher one."
+              "Waiting downloads start highest priority first (downloads queued by hand are 0); one already running is never stopped for a higher one."
             )}
           </.help>
           <div class="schedule-check">

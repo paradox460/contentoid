@@ -56,11 +56,6 @@ msgstr ""
 msgid "+ up to %{duration}"
 msgstr ""
 
-#: lib/contentoid_web/live/schedules_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "9:00 on weekdays. Or"
-msgstr ""
-
 #: lib/contentoid_web/live/downloaders_live/index.ex
 #, elixir-autogen, elixir-format
 msgid "A URL goes to the highest-priority enabled downloader whose pattern matches it. One that takes arguments is started only by a schedule."
@@ -141,22 +136,12 @@ msgstr ""
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/contentoid_web/live/settings_live.ex
-#, elixir-autogen, elixir-format
-msgid "Blank:"
-msgstr ""
-
 #: lib/contentoid_web/live/downloaders_live/form.ex
 #: lib/contentoid_web/live/downloads_live.ex
 #: lib/contentoid_web/live/post_processors_live/form.ex
 #: lib/contentoid_web/live/schedules_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Cancel"
-msgstr ""
-
-#: lib/contentoid_web/format.ex
-#, elixir-autogen, elixir-format
-msgid "Cancelled"
 msgstr ""
 
 #: lib/contentoid_web/live/downloaded_live.ex
@@ -189,11 +174,6 @@ msgstr[1] ""
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
 msgid "Close"
-msgstr ""
-
-#: lib/contentoid_web/format.ex
-#, elixir-autogen, elixir-format
-msgid "Completed"
 msgstr ""
 
 #: lib/contentoid_web/live/downloaders_live/form.ex
@@ -284,11 +264,6 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-#: lib/contentoid_web/live/settings_live.ex
-#, elixir-autogen, elixir-format
-msgid "Detected"
-msgstr ""
-
 #: lib/contentoid_web/live/schedules_live/index.ex
 #, elixir-autogen, elixir-format
 msgid "Didn't start: %{reason}."
@@ -335,11 +310,6 @@ msgstr ""
 #: lib/contentoid_web/live/post_processors_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Docker volumes kept between runs, such as caches. Created on first use."
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Doesn't match"
 msgstr ""
 
 #: lib/contentoid_web/live/downloads_live.ex
@@ -405,11 +375,6 @@ msgstr ""
 msgid "Each URL goes to one downloader, which runs it in its own container."
 msgstr ""
 
-#: lib/contentoid_web/live/schedules_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Each run starts a random time up to the delay after its run time, e.g."
-msgstr ""
-
 #: lib/contentoid_web/live/downloaders_live/index.ex
 #: lib/contentoid_web/live/post_processors_live/index.ex
 #: lib/contentoid_web/live/schedules_live/index.ex
@@ -451,11 +416,6 @@ msgstr ""
 msgid "Exit status"
 msgstr ""
 
-#: lib/contentoid_web/format.ex
-#, elixir-autogen, elixir-format
-msgid "Failed"
-msgstr ""
-
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
 msgid "File"
@@ -471,11 +431,6 @@ msgstr ""
 #: lib/contentoid_web/live/post_processors_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Files"
-msgstr ""
-
-#: lib/contentoid_web/live/downloads_live.ex
-#, elixir-autogen, elixir-format
-msgid "Finished"
 msgstr ""
 
 #: lib/contentoid_web/live/downloaders_live/form.ex
@@ -514,11 +469,6 @@ msgstr ""
 msgid "Image pull timeout (minutes)"
 msgstr ""
 
-#: lib/contentoid_web/live/settings_live.ex
-#, elixir-autogen, elixir-format
-msgid "In use:"
-msgstr ""
-
 #: lib/contentoid_web/live/downloaders_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Input"
@@ -534,24 +484,9 @@ msgstr ""
 msgid "It has downloads queued or running; cancel them or let them finish first."
 msgstr ""
 
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "It's given arguments where it's assigned, on a downloader's or schedule's form: they're"
-msgstr ""
-
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Its output directory is"
-msgstr ""
-
 #: lib/contentoid_web/live/downloaders_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Kept in Contentoid and put into the container before the script starts, read-only: a tool's config, a cookies file. Missing directories are created. Not inside a mount."
-msgstr ""
-
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Kept in Contentoid and put into the container before the script starts, read-only: a tool's config. Missing directories are created. Not inside a mount, and not under"
 msgstr ""
 
 #: lib/contentoid_web/live/schedules_live/index.ex
@@ -574,24 +509,9 @@ msgstr ""
 msgid "Log lines kept per download"
 msgstr ""
 
-#: lib/contentoid_web/components/layouts.ex
-#, elixir-autogen, elixir-format
-msgid "Main"
-msgstr ""
-
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
 msgid "Match each URL"
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Matches"
-msgstr ""
-
-#: lib/contentoid_web/live/schedules_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Minute, hour, day of month, month, day of week:"
 msgstr ""
 
 #: lib/contentoid_web/live/downloads_live.ex
@@ -603,11 +523,6 @@ msgstr ""
 #: lib/contentoid_web/live/post_processors_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Mounts"
-msgstr ""
-
-#: lib/contentoid_web/components/post_processor_assignments.ex
-#, elixir-autogen, elixir-format
-msgid "Mounts added here are bound for these runs on top of the post-processor's own (host paths that exist, not under"
 msgstr ""
 
 #: lib/contentoid_web/live/downloaders_live/form.ex
@@ -667,11 +582,6 @@ msgstr ""
 #: lib/contentoid_web/components/container_components.ex
 #, elixir-autogen, elixir-format
 msgid "Not on the Docker daemon yet; pulled when a download first needs it"
-msgstr ""
-
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Not under"
 msgstr ""
 
 #: lib/contentoid_web/live/downloads_live.ex
@@ -815,12 +725,6 @@ msgstr ""
 msgid "Queue"
 msgstr ""
 
-#: lib/contentoid_web/format.ex
-#: lib/contentoid_web/live/downloads_live.ex
-#, elixir-autogen, elixir-format
-msgid "Queued"
-msgstr ""
-
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
 msgid "Queued %{number} download."
@@ -883,12 +787,6 @@ msgstr ""
 msgid "Reorder"
 msgstr ""
 
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Report with one JSON object per line, named by its"
-msgstr ""
-
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
 msgid "Resume queue"
@@ -904,30 +802,14 @@ msgstr ""
 msgid "Retry post-processing"
 msgstr ""
 
-#: lib/contentoid_web/components/post_processor_assignments.ex
-#, elixir-autogen, elixir-format
-msgid "Run after each successful download, highest priority first, together with those of the schedule or downloader it came from. A priority here replaces the post-processor's own for these runs; blank keeps it. A post-processor's script gets its arguments as"
-msgstr ""
-
 #: lib/contentoid_web/live/schedules_live/index.ex
 #, elixir-autogen, elixir-format
 msgid "Run now"
 msgstr ""
 
-#: lib/contentoid_web/format.ex
-#, elixir-autogen, elixir-format
-msgid "Running"
-msgstr ""
-
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
 msgid "Running first, then what runs next. Drag a waiting download to reorder."
-msgstr ""
-
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#: lib/contentoid_web/live/post_processors_live/index.ex
-#, elixir-autogen, elixir-format
-msgid "Runs"
 msgstr ""
 
 #: lib/contentoid_web/live/downloaders_live/form.ex
@@ -1032,19 +914,9 @@ msgstr ""
 msgid "Start time changed."
 msgstr ""
 
-#: lib/contentoid_web/live/downloads_live.ex
-#, elixir-autogen, elixir-format
-msgid "Started"
-msgstr ""
-
 #: lib/contentoid_web/live/schedules_live/index.ex
 #, elixir-autogen, elixir-format
 msgid "Started a run."
-msgstr ""
-
-#: lib/contentoid_web/live/downloads_live.ex
-#, elixir-autogen, elixir-format
-msgid "Starts"
 msgstr ""
 
 #: lib/contentoid_web/live/downloads_live.ex
@@ -1060,11 +932,6 @@ msgstr ""
 #: lib/contentoid_web/live/settings_live.ex
 #, elixir-autogen, elixir-format
 msgid "Stop grace is how long a cancelled or interrupted script gets to save its resume state before it's killed."
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "Takes"
 msgstr ""
 
 #: lib/contentoid_web/live/downloads_live.ex
@@ -1097,21 +964,6 @@ msgstr ""
 msgid "That start time isn't a valid date and time."
 msgstr ""
 
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "The URL is"
-msgstr ""
-
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "The download's files (paths in this container) are one per line in"
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "The output mount's path is"
-msgstr ""
-
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
 msgid "The queue changed while you dragged; try again."
@@ -1120,11 +972,6 @@ msgstr ""
 #: lib/contentoid_web/live/schedules_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Time zone"
-msgstr ""
-
-#: lib/contentoid_web/live/downloads_live.ex
-#, elixir-autogen, elixir-format
-msgid "Total"
 msgstr ""
 
 #: lib/contentoid_web/live/downloaders_live/form.ex
@@ -1204,33 +1051,6 @@ msgstr ""
 msgid "Whichever matches the URL"
 msgstr ""
 
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "a new file"
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "a schedule's arguments are"
-msgstr ""
-
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "add a mount to move files elsewhere on the host."
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "and"
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "as written)."
-msgstr ""
-
 #: lib/contentoid/downloads/runner.ex
 #, elixir-autogen, elixir-format
 msgid "can't create the output directory %{dir}: %{reason}"
@@ -1256,29 +1076,9 @@ msgstr ""
 msgid "download is no longer running"
 msgstr ""
 
-#: lib/contentoid_web/live/settings_live.ex
-#, elixir-autogen, elixir-format
-msgid "else the first of these that exists:"
-msgstr ""
-
-#: lib/contentoid_web/live/schedules_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "every half hour,"
-msgstr ""
-
 #: lib/contentoid/downloads/runner.ex
 #, elixir-autogen, elixir-format
 msgid "exited with status %{status}"
-msgstr ""
-
-#: lib/contentoid_web/live/schedules_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "for anywhere in the next half hour, so schedules due together don't all start at once; Run now starts at once. Waiting downloads start highest priority first (downloads queued by hand are 0); one already running is never stopped for a higher one."
-msgstr ""
-
-#: lib/contentoid_web/live/schedules_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "is 3:00 every day,"
 msgstr ""
 
 #: lib/contentoid/downloads.ex
@@ -1290,32 +1090,6 @@ msgstr ""
 #: lib/contentoid/downloads/runner.ex
 #, elixir-autogen, elixir-format
 msgid "its output directory is unknown"
-msgstr ""
-
-#: lib/contentoid_web/components/post_processor_assignments.ex
-#, elixir-autogen, elixir-format
-msgid "its own"
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "key:"
-msgstr ""
-
-#: lib/contentoid_web/live/post_processors_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "maps host paths to this container's, a line each (host, tab, container path), for arguments given as host paths."
-msgstr ""
-
-#: lib/contentoid_web/live/schedules_live/index.ex
-#, elixir-autogen, elixir-format
-msgid "matches URL"
-msgstr ""
-
-#: lib/contentoid_web/live/schedules_live/index.ex
-#, elixir-autogen, elixir-format
-msgid "never"
 msgstr ""
 
 #: lib/contentoid/downloads/docker.ex
@@ -1334,35 +1108,9 @@ msgstr ""
 msgid "no download directory set: set it in Settings"
 msgstr ""
 
-#: lib/contentoid_web/components/post_processor_assignments.ex
-#: lib/contentoid_web/live/schedules_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "none"
-msgstr ""
-
-#: lib/contentoid_web/live/schedules_live/index.ex
-#, elixir-autogen, elixir-format
-msgid "off"
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "optional"
-msgstr ""
-
 #: lib/contentoid/schedules.ex
 #, elixir-autogen, elixir-format
 msgid "skipped: the previous run is still queued or running"
-msgstr ""
-
-#: lib/contentoid_web/live/downloaders_live/form.ex
-#, elixir-autogen, elixir-format
-msgid "split as a shell would"
-msgstr ""
-
-#: lib/contentoid_web/components/post_processor_assignments.ex
-#, elixir-autogen, elixir-format
-msgid "split as a shell would."
 msgstr ""
 
 #: lib/contentoid_web/live/downloaders_live/index.ex
@@ -1385,11 +1133,6 @@ msgstr ""
 msgid "the output directory %{dir} doesn't exist"
 msgstr ""
 
-#: lib/contentoid_web/live/settings_live.ex
-#, elixir-autogen, elixir-format
-msgid "when it's"
-msgstr ""
-
 #: lib/contentoid_web/live/schedules_live/form.ex
 #, elixir-autogen, elixir-format
 msgid "Downloads a URL again on a schedule, or runs an arguments downloader with its arguments. Each run is an ordinary download."
@@ -1410,22 +1153,273 @@ msgstr ""
 msgid "No output."
 msgstr ""
 
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "%{mounts} maps host paths to this container's, a line each (host, tab, container path), for arguments given as host paths."
+msgstr ""
+
+#: lib/contentoid_web/components/post_processor_assignments.ex
+#, elixir-autogen, elixir-format
+msgid "A post-processor's script gets its arguments as %{args}, split as a shell would."
+msgstr ""
+
+#: lib/contentoid_web/live/settings_live.ex
+#, elixir-autogen, elixir-format
+msgid "Blank: %{env} when it's %{unix}, else the first of these that exists: %{first}, %{second}, %{third}."
+msgstr ""
+
+#: lib/contentoid_web/live/schedules_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Each run starts a random time up to the delay after its run time, e.g. %{example} for anywhere in the next half hour, so schedules due together don't all start at once; Run now starts at once."
+msgstr ""
+
+#: lib/contentoid_web/live/settings_live.ex
+#, elixir-autogen, elixir-format
+msgid "In use: %{path}."
+msgstr ""
+
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "It's given arguments where it's assigned, on a downloader's or schedule's form: they're %{args} (and %{arguments} as written)."
+msgstr ""
+
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Its output directory is %{output} (%{path}); add a mount to move files elsewhere on the host."
+msgstr ""
+
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Kept in Contentoid and put into the container before the script starts, read-only: a tool's config. Missing directories are created. Not inside a mount, and not under %{reserved}."
+msgstr ""
+
+#: lib/contentoid_web/live/schedules_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Minute, hour, day of month, month, day of week: %{daily} is 3:00 every day, %{half_hourly} every half hour, %{weekdays} 9:00 on weekdays. Or %{hourly_alias}, %{daily_alias}, %{weekly_alias}, %{monthly_alias}."
+msgstr ""
+
+#: lib/contentoid_web/components/post_processor_assignments.ex
+#, elixir-autogen, elixir-format
+msgid "Mounts added here are bound for these runs on top of the post-processor's own (host paths that exist, not under %{reserved})."
+msgstr ""
+
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Not under %{reserved}."
+msgstr ""
+
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Report with one JSON object per line, named by its %{key} key: %{moved} (%{from}, %{to}), %{removed} and %{file} (%{path}, a new file), %{progress} and %{error} (%{message})."
+msgstr ""
+
+#: lib/contentoid_web/live/downloaders_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Report with one JSON object per line, named by its %{key} key: %{progress} (%{percent}, %{text}), %{total} (%{done}, %{of}), %{start} and %{file} (%{path}, optional %{url}), %{error} (%{message})."
+msgstr ""
+
+#: lib/contentoid_web/components/post_processor_assignments.ex
+#, elixir-autogen, elixir-format
+msgid "Run after each successful download, highest priority first, together with those of the schedule or downloader it came from. A priority here replaces the post-processor's own for these runs; blank keeps it."
+msgstr ""
+
+#: lib/contentoid_web/live/downloaders_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "The URL is %{url} (and %{first}); a schedule's arguments are %{args}, split as a shell would (and %{arguments} as written)."
+msgstr ""
+
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "The download's files (paths in this container) are one per line in %{files}."
+msgstr ""
+
+#: lib/contentoid_web/live/downloaders_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "The output mount's path is %{output}."
+msgstr ""
+
+#: lib/contentoid_web/live/schedules_live/form.ex
+#, elixir-autogen, elixir-format
+msgid "Waiting downloads start highest priority first (downloads queued by hand are 0); one already running is never stopped for a higher one."
+msgstr ""
+
+#: lib/contentoid_web/live/settings_live.ex
+#, elixir-autogen, elixir-format
+msgctxt "Docker socket field, when blank"
+msgid "Detected"
+msgstr ""
+
+#: lib/contentoid_web/live/schedules_live/index.ex
+#, elixir-autogen, elixir-format
+msgctxt "a schedule's last run"
+msgid "never"
+msgstr ""
+
+#: lib/contentoid_web/components/post_processor_assignments.ex
+#, elixir-autogen, elixir-format
+msgctxt "arguments"
+msgid "none"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgctxt "before the time a run started"
+msgid "since"
+msgstr ""
+
 #: lib/contentoid_web/format.ex
 #, elixir-autogen, elixir-format
+msgctxt "download status"
+msgid "Cancelled"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "download status"
+msgid "Completed"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "download status"
+msgid "Failed"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "download status"
+msgid "Queued"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "download status"
+msgid "Running"
+msgstr ""
+
+#: lib/contentoid_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgctxt "navigation"
+msgid "Main"
+msgstr ""
+
+#: lib/contentoid_web/live/schedules_live/index.ex
+#, elixir-autogen, elixir-format
+msgctxt "next run of a disabled schedule"
+msgid "off"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "post-processor run status"
+msgid "Cancelled"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "post-processor run status"
+msgid "Failed"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "post-processor run status"
+msgid "Running"
+msgstr ""
+
+#: lib/contentoid_web/format.ex
+#, elixir-autogen, elixir-format
+msgctxt "post-processor run status"
 msgid "Skipped"
 msgstr ""
 
 #: lib/contentoid_web/format.ex
 #, elixir-autogen, elixir-format
+msgctxt "post-processor run status"
 msgid "Succeeded"
 msgstr ""
 
 #: lib/contentoid_web/format.ex
 #, elixir-autogen, elixir-format
+msgctxt "post-processor run status"
 msgid "Waiting"
+msgstr ""
+
+#: lib/contentoid_web/components/post_processor_assignments.ex
+#, elixir-autogen, elixir-format
+msgctxt "priority, when blank: the post-processor's"
+msgid "its own"
 msgstr ""
 
 #: lib/contentoid_web/live/downloads_live.ex
 #, elixir-autogen, elixir-format
-msgid "since"
+msgctxt "progress of the whole download"
+msgid "Total"
+msgstr ""
+
+#: lib/contentoid_web/live/schedules_live/form.ex
+#, elixir-autogen, elixir-format
+msgctxt "random delay"
+msgid "none"
+msgstr ""
+
+#: lib/contentoid_web/live/downloaders_live/form.ex
+#, elixir-autogen, elixir-format
+msgctxt "the URL pattern, tried on a URL"
+msgid "Doesn't match"
+msgstr ""
+
+#: lib/contentoid_web/live/downloaders_live/form.ex
+#, elixir-autogen, elixir-format
+msgctxt "the URL pattern, tried on a URL"
+msgid "Matches"
+msgstr ""
+
+#: lib/contentoid_web/live/downloaders_live/form.ex
+#, elixir-autogen, elixir-format
+msgctxt "what a downloader is given"
+msgid "Takes"
+msgstr ""
+
+#: lib/contentoid_web/live/post_processors_live/form.ex
+#: lib/contentoid_web/live/post_processors_live/index.ex
+#, elixir-autogen, elixir-format
+msgctxt "when a post-processor runs"
+msgid "Runs"
+msgstr ""
+
+#: lib/contentoid_web/live/schedules_live/index.ex
+#, elixir-autogen, elixir-format
+msgctxt "a schedule's downloader, when none is picked"
+msgid "matches URL"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgctxt "finished downloads, a heading"
+msgid "Finished"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgctxt "when a download finished"
+msgid "Finished"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgctxt "when a download started"
+msgid "Started"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgctxt "when a download starts"
+msgid "Starts"
+msgstr ""
+
+#: lib/contentoid_web/live/downloads_live.ex
+#, elixir-autogen, elixir-format
+msgctxt "when a download was queued"
+msgid "Queued"
 msgstr ""

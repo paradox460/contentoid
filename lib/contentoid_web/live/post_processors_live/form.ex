@@ -174,7 +174,7 @@ defmodule ContentoidWeb.PostProcessorsLive.Form do
               <.input
                 field={@form[:trigger]}
                 type="select"
-                label={gettext("Runs")}
+                label={pgettext("when a post-processor runs", "Runs")}
                 options={[
                   {gettext("When the download has files"), :new_files},
                   {gettext("After every successful download"), :always}
@@ -205,30 +205,47 @@ defmodule ContentoidWeb.PostProcessorsLive.Form do
               />
             </div>
             <.help>
-              {gettext(
-                "It's given arguments where it's assigned, on a downloader's or schedule's form: they're"
+              {rich(
+                gettext(
+                  "It's given arguments where it's assigned, on a downloader's or schedule's form: they're %{args} (and %{arguments} as written).",
+                  args: code(~s("$@")),
+                  arguments: code("$CONTENTOID_ARGUMENTS")
+                )
               )}
-              <code>"$@"</code>
-              ({gettext("and")} <code>$CONTENTOID_ARGUMENTS</code>
-              {gettext("as written).")} {gettext(
-                "The download's files (paths in this container) are one per line in"
-              )} <code>$CONTENTOID_FILES</code>. {gettext("Its output directory is")}
-              <code>$CONTENTOID_OUTPUT</code>
-              (<code>/contentoid/output</code>); {gettext(
-                "add a mount to move files elsewhere on the host."
+              {rich(
+                gettext(
+                  "The download's files (paths in this container) are one per line in %{files}.",
+                  files: code("$CONTENTOID_FILES")
+                )
               )}
-              <code>$CONTENTOID_MOUNTS</code>
-              {gettext(
-                "maps host paths to this container's, a line each (host, tab, container path), for arguments given as host paths."
+              {rich(
+                gettext(
+                  "Its output directory is %{output} (%{path}); add a mount to move files elsewhere on the host.",
+                  output: code("$CONTENTOID_OUTPUT"),
+                  path: code("/contentoid/output")
+                )
               )}
-              {gettext("Report with one JSON object per line, named by its")}
-              <code>"contentoid"</code>
-              {gettext("key:")} <code>moved</code>
-              (<code>from</code>, <code>to</code>), <code>removed</code>
-              {gettext("and")} <code>file</code>
-              (<code>path</code>, {gettext("a new file")}), <code>progress</code>
-              {gettext("and")} <code>error</code>
-              (<code>message</code>).
+              {rich(
+                gettext(
+                  "%{mounts} maps host paths to this container's, a line each (host, tab, container path), for arguments given as host paths.",
+                  mounts: code("$CONTENTOID_MOUNTS")
+                )
+              )}
+              {rich(
+                gettext(
+                  "Report with one JSON object per line, named by its %{key} key: %{moved} (%{from}, %{to}), %{removed} and %{file} (%{path}, a new file), %{progress} and %{error} (%{message}).",
+                  key: code(~s("contentoid")),
+                  moved: code("moved"),
+                  from: code("from"),
+                  to: code("to"),
+                  removed: code("removed"),
+                  file: code("file"),
+                  path: code("path"),
+                  progress: code("progress"),
+                  error: code("error"),
+                  message: code("message")
+                )
+              )}
             </.help>
           </fieldset>
 
@@ -238,7 +255,7 @@ defmodule ContentoidWeb.PostProcessorsLive.Form do
               {gettext(
                 "Host paths bound into the container, such as a library to move files into. They must exist."
               )}
-              {gettext("Not under")} <code>/contentoid</code>.
+              {rich(gettext("Not under %{reserved}.", reserved: code("/contentoid")))}
             </.help>
             <ContainerComponents.binds field={@form[:mounts]} />
           </fieldset>
@@ -247,7 +264,7 @@ defmodule ContentoidWeb.PostProcessorsLive.Form do
             <legend>{gettext("Named volumes")}</legend>
             <.help>
               {gettext("Docker volumes kept between runs, such as caches. Created on first use.")}
-              {gettext("Not under")} <code>/contentoid</code>.
+              {rich(gettext("Not under %{reserved}.", reserved: code("/contentoid")))}
             </.help>
             <ContainerComponents.binds field={@form[:volumes]} kind={:volume} />
           </fieldset>
@@ -255,9 +272,12 @@ defmodule ContentoidWeb.PostProcessorsLive.Form do
           <fieldset id="post-processor-files">
             <legend>{gettext("Files")}</legend>
             <.help>
-              {gettext(
-                "Kept in Contentoid and put into the container before the script starts, read-only: a tool's config. Missing directories are created. Not inside a mount, and not under"
-              )} <code>/contentoid</code>.
+              {rich(
+                gettext(
+                  "Kept in Contentoid and put into the container before the script starts, read-only: a tool's config. Missing directories are created. Not inside a mount, and not under %{reserved}.",
+                  reserved: code("/contentoid")
+                )
+              )}
             </.help>
             <ContainerComponents.files field={@form[:files]} directory_placeholder="/config" />
           </fieldset>

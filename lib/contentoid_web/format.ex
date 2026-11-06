@@ -19,20 +19,21 @@ defmodule ContentoidWeb.Format do
   def duration(seconds),
     do: seconds |> Localize.Duration.new_from_seconds() |> Localize.Duration.to_string!(locale: Localize.get_locale())
 
+  # Statuses carry a context: a language may inflect a download's and a run's differently.
   @doc "A `Contentoid.Downloads.Download` status, for display."
   @spec download_status(atom()) :: String.t()
-  def download_status(:queued), do: gettext("Queued")
-  def download_status(:running), do: gettext("Running")
-  def download_status(:completed), do: gettext("Completed")
-  def download_status(:failed), do: gettext("Failed")
-  def download_status(:cancelled), do: gettext("Cancelled")
+  def download_status(:queued), do: pgettext("download status", "Queued")
+  def download_status(:running), do: pgettext("download status", "Running")
+  def download_status(:completed), do: pgettext("download status", "Completed")
+  def download_status(:failed), do: pgettext("download status", "Failed")
+  def download_status(:cancelled), do: pgettext("download status", "Cancelled")
 
   @doc "A `Contentoid.Downloads.Download.Step` status, for display."
   @spec step_status(atom()) :: String.t()
-  def step_status(:pending), do: gettext("Waiting")
-  def step_status(:running), do: gettext("Running")
-  def step_status(:succeeded), do: gettext("Succeeded")
-  def step_status(:failed), do: gettext("Failed")
-  def step_status(:skipped), do: gettext("Skipped")
-  def step_status(:cancelled), do: gettext("Cancelled")
+  def step_status(:pending), do: pgettext("post-processor run status", "Waiting")
+  def step_status(:running), do: pgettext("post-processor run status", "Running")
+  def step_status(:succeeded), do: pgettext("post-processor run status", "Succeeded")
+  def step_status(:failed), do: pgettext("post-processor run status", "Failed")
+  def step_status(:skipped), do: pgettext("post-processor run status", "Skipped")
+  def step_status(:cancelled), do: pgettext("post-processor run status", "Cancelled")
 end

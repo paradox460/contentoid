@@ -150,7 +150,9 @@ defmodule ContentoidWeb.SchedulesLive.Index do
           </:col>
           <:col :let={{_id, schedule}} label={gettext("Downloader")}>
             <span :if={schedule.downloader}>{schedule.downloader.name}</span>
-            <span :if={!schedule.downloader} class="schedule-muted">{gettext("matches URL")}</span>
+            <span :if={!schedule.downloader} class="schedule-muted">
+              {pgettext("a schedule's downloader, when none is picked", "matches URL")}
+            </span>
           </:col>
           <:col :let={{_id, schedule}} label={gettext("When")}>
             <code class="schedule-cron" title={schedule.timezone}>{schedule.cron}</code>
@@ -164,15 +166,18 @@ defmodule ContentoidWeb.SchedulesLive.Index do
             <span :if={schedule.next_run_at && schedule.jitter_seconds > 0} class="schedule-muted">
               {gettext("+ up to %{duration}", duration: duration(schedule.jitter_seconds))}
             </span>
-            <span :if={!schedule.next_run_at} class="schedule-muted">{gettext("off")}</span>
+            <span :if={!schedule.next_run_at} class="schedule-muted">{pgettext(
+              "next run of a disabled schedule",
+              "off"
+            )}</span>
           </:col>
           <:col :let={{_id, schedule}} label={gettext("Last run")}>
             <.link :if={@latest[schedule.id]} navigate={~p"/downloads/#{@latest[schedule.id]}"}>
               {download_status(@latest[schedule.id].status)}
             </.link>
-            <span :if={!@latest[schedule.id] && !schedule.last_error} class="schedule-muted">{gettext(
-              "never"
-            )}</span>
+            <span :if={!@latest[schedule.id] && !schedule.last_error} class="schedule-muted">
+              {pgettext("a schedule's last run", "never")}
+            </span>
             <span :if={schedule.last_error} class="schedule-error">{message_text(schedule.last_error)}</span>
           </:col>
           <:action :let={{_id, schedule}}>
