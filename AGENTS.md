@@ -91,15 +91,18 @@ radius, flat surfaces, Iosevka, icon stroke width) and the contrast constraints 
 ### Downloaders and downloads
 
 - A **downloader** (`Contentoid.Downloaders.Downloader`, a database row edited on the Downloaders
-  page; called a scraper before the `rename_scrapers_to_downloaders` migration) is an input kind
+  page; called a scraper before 0.0.1) is an input kind
   (`input`: `:url` or `:arguments`), a URL pattern (URL downloaders only), priority, enabled flag,
   concurrency, Docker image, shell script, output mount, extra mounts, named
   volumes and files. There is no per-tool Elixir code: everything tool-specific lives in the script
-  and its files. The three defaults (yt-dlp, gallery-dl, aria2c) are inserted by the
-  `create_scrapers` migration as literal data; change a default in a new migration, not the old
-  one, once it has run anywhere but dev. Their images: `docker/yt-dlp`, `docker/aria2`, published by
-  CI as `ghcr.io/paradox460/contentoid-<name>` (`use_published_tool_images` migration), gallery-dl's
-  own `ghcr.io/mikf/gallery-dl`.
+  and its files. The three defaults (yt-dlp, gallery-dl, aria2c) are inserted as literal data by
+  `priv/repo/structure.sql`; change a default in a new migration, never there. Their images:
+  `docker/yt-dlp`, `docker/aria2`, published by CI as `ghcr.io/paradox460/contentoid-<name>`,
+  gallery-dl's own `ghcr.io/mikf/gallery-dl`.
+- **Migrations up to 0.0.1 are squashed** into `priv/repo/structure.sql`, run on a new database by
+  `20261105192052_structure.exs` (that file's version is 0.0.1's last migration, so a database that
+  ran the originals skips it). The release has no psql, so it runs as one PL/pgSQL `EXECUTE`. Never
+  edit `structure.sql`: every schema or default change is a new migration.
 - A downloader's **files** (`Downloader.ConfigFile`: name, directory, contents) are stored in the
   row and put into the created container before it starts, as a tar through the Engine API
   (`PUT /containers/{id}/archive`, `Contentoid.Downloads.Docker.Tar`), root-owned and mode 0444, so
