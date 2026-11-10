@@ -32,8 +32,6 @@ config :contentoid, ContentoidWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :contentoid, dev_routes: true
 
-config :iconex, delivery: :inline, otp_app: :contentoid
-
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 

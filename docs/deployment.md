@@ -91,6 +91,7 @@ bind-mounted into Contentoid's container **at the same path**:
 | `DATABASE_URL` | yes | `ecto://USER:PASS@HOST/DATABASE` |
 | `SECRET_KEY_BASE` | yes | At least 64 characters: `openssl rand -base64 48` |
 | `PHX_HOST` | yes | The host name users reach it at. LiveView's websocket only accepts this origin |
+| `PHX_PATH` | no | A sub-path behind a reverse proxy, e.g. `/contentoid` (below). Unset serves at the root |
 | `PORT` | no | HTTP port in the container, default `4100` |
 | `POOL_SIZE` | no | Database connections, default `10` |
 | `ECTO_IPV6` | no | `true` to reach the database over IPv6 |
@@ -115,6 +116,22 @@ For a LAN-only `.lan` name, add `tls internal` to that block and trust Caddy's r
 serve plain HTTP with no proxy, set `FORCE_SSL=false`. Contentoid then also builds its own URLs as
 `http://PHX_HOST:PORT`. Either way, the browser must reach it at `PHX_HOST`: LiveView's websocket
 refuses other origins, so a page opened by IP address or another name loads, but then doesn't work.
+
+### Under a sub-path
+
+To share a host name with other apps, set `PHX_PATH` to the path (`/contentoid`), and every link,
+asset and the LiveView socket go below it. The proxy may strip the prefix or pass it on; Contentoid
+accepts both (`ContentoidWeb.PathPrefix`). Don't pick a path that is also one of Contentoid's own
+(`/downloads`, `/assets`, …). With Caddy:
+
+```
+:80 {
+  redir /contentoid /contentoid/ permanent
+  reverse_proxy /contentoid/* 127.0.0.1:4100
+}
+```
+
+`handle_path /contentoid/* { reverse_proxy 127.0.0.1:4100 }`, which strips the prefix, works too.
 
 ### In-app settings
 

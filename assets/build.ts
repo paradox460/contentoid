@@ -60,7 +60,7 @@ async function build(opts: Record<string, unknown>, label = "") {
       entrypoints: bundle.entrypoints,
       outdir: bundle.stage,
       root: bundle.root,
-      external: ["/fonts/*", "/images/*"],
+      external: ["../../fonts/*", "/images/*"],
       throw: false,
       ...opts,
     });

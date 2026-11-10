@@ -15,6 +15,11 @@ defmodule ContentoidWeb.Endpoint do
     same_site: "Lax"
   ]
 
+  # Below a reverse proxy's sub-path (`PHX_PATH`): `ContentoidWeb.PathPrefix`. An override, not a
+  # plug, because the socket dispatch runs before every plug. Phoenix's own `call/2` wraps this one
+  # and sets `script_name` first.
+  def call(conn, opts), do: super(ContentoidWeb.PathPrefix.normalize(conn), opts)
+
   socket "/live", Socket,
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]

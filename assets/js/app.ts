@@ -22,7 +22,10 @@ const csrfToken = document
   .querySelector("meta[name='csrf-token']")!
   .getAttribute("content");
 
-const liveSocket = new LiveSocket("/live", Socket, {
+// Below the endpoint's URL path (`PHX_PATH`) behind a reverse proxy's sub-path; root.html.heex.
+const socketPath = document.querySelector("meta[name='live-socket-path']")!.getAttribute("content")!;
+
+const liveSocket = new LiveSocket(socketPath, Socket, {
   longPollFallbackMs: 2500,
   // The browser's IANA time zone: schedules default to it, and times are shown in it.
   params: { _csrf_token: csrfToken, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone },

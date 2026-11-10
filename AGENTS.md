@@ -28,9 +28,10 @@ radius, flat surfaces, Iosevka, icon stroke width) and the contrast constraints 
   `name={if @x, do: "pause", else: "play"}`. List every possible value with
   `hint(:lucide, ~w[…])` (`Iconex.hint/2`) at the top of the function component, or the icon renders
   blank from the pruned sprite.
-- Delivery: dev uses `delivery: :inline` (`config/dev.exs`). Other envs use the default `:external`
-  sprite file. `{Iconex.sprite_tag()}` sits once in `layouts/root.html.heex`. `:sets` and `:delivery`
-  are read when iconex compiles: `mix deps.compile iconex --force` after changing them.
+- Delivery: every env uses `delivery: :inline` (`config/config.exs`): an `:external` sprite URL is
+  fixed at compile time and would miss `PHX_PATH`. `{Iconex.sprite_tag()}` sits once in
+  `layouts/root.html.heex`. `:sets` and `:delivery` are read when iconex compiles:
+  `mix deps.compile iconex --force` after changing them.
 - Sizing: `.iconex` in `assets/css/base.css` makes every icon 1em. It uses `stroke="currentColor"`,
   so size and color it from the parent's `font-size`/`color`. Don't pass Tailwind `class` values; the
   `size` attr exists but the 1em CSS overrides it.

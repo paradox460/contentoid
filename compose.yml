@@ -32,6 +32,7 @@ services:
       DATABASE_URL: ecto://postgres:${POSTGRES_PASSWORD}@db/contentoid
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE in .env}
       PHX_HOST: ${PHX_HOST:-localhost}
+      PHX_PATH: ${PHX_PATH:-}
       FORCE_SSL: ${FORCE_SSL:-false}
       DOWNLOAD_DIR: ${DOWNLOAD_DIR:?set DOWNLOAD_DIR in .env}
       DEFAULT_LOCALE: ${DEFAULT_LOCALE:-en}

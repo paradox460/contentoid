@@ -45,8 +45,9 @@ config :contentoid,
 # Schedules run in the time zone they're written for (`Contentoid.Schedules`).
 config :elixir, :time_zone_database, Tz.TimeZoneDatabase
 
-# Icon strokes, in Lucide's 24-unit viewBox (Lucide's own is 2). See DESIGN.md.
-config :iconex, lucide: [stroke_width: 1], sets: [:lucide]
+# Icon strokes, in Lucide's 24-unit viewBox (Lucide's own is 2). See DESIGN.md. The sprite is inlined
+# in every page: an external one's URL is fixed at compile time, so it would miss `PHX_PATH`.
+config :iconex, delivery: :inline, lucide: [stroke_width: 1], otp_app: :contentoid, sets: [:lucide]
 
 # CLDR data for number and date formatting (localize). Every "modern"-coverage locale, downloaded
 # into priv/localize/locales by `mix localize.download_locales` (mix setup, Dockerfile).

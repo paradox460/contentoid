@@ -1,8 +1,10 @@
 /* Iosevka Custom, built from `iosevka.toml` (`mise run fonts`). One face per built weight and slope;
-   weights in between snap to the nearest of 200, 400 and 700. */
+   weights in between snap to the nearest of 200, 400 and 700. URLs are relative to the built
+   `/assets/css/app.css`, so they keep the endpoint's URL path (`PHX_PATH`); `build.ts` leaves them
+   external. */
 @font-face {
   font-family: "Iosevka Custom";
-  src: url("/fonts/IosevkaCustom-ExtraLight.woff2") format("woff2");
+  src: url("../../fonts/IosevkaCustom-ExtraLight.woff2") format("woff2");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
@@ -10,7 +12,7 @@
 
 @font-face {
   font-family: "Iosevka Custom";
-  src: url("/fonts/IosevkaCustom-ExtraLightItalic.woff2") format("woff2");
+  src: url("../../fonts/IosevkaCustom-ExtraLightItalic.woff2") format("woff2");
   font-weight: 200;
   font-style: italic;
   font-display: swap;
@@ -18,7 +20,7 @@
 
 @font-face {
   font-family: "Iosevka Custom";
-  src: url("/fonts/IosevkaCustom-Regular.woff2") format("woff2");
+  src: url("../../fonts/IosevkaCustom-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -26,7 +28,7 @@
 
 @font-face {
   font-family: "Iosevka Custom";
-  src: url("/fonts/IosevkaCustom-Italic.woff2") format("woff2");
+  src: url("../../fonts/IosevkaCustom-Italic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -34,7 +36,7 @@
 
 @font-face {
   font-family: "Iosevka Custom";
-  src: url("/fonts/IosevkaCustom-Bold.woff2") format("woff2");
+  src: url("../../fonts/IosevkaCustom-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -42,7 +44,7 @@
 
 @font-face {
   font-family: "Iosevka Custom";
-  src: url("/fonts/IosevkaCustom-BoldItalic.woff2") format("woff2");
+  src: url("../../fonts/IosevkaCustom-BoldItalic.woff2") format("woff2");
   font-weight: 700;
   font-style: italic;
   font-display: swap;

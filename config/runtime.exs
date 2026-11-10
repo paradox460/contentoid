@@ -84,10 +84,14 @@ if config_env() == :prod do
     config :contentoid, Contentoid.Settings, default_download_dir: download_dir
   end
 
+  # The URL path under a reverse proxy's sub-path (`/contentoid`), whether or not the proxy strips it
+  # (`ContentoidWeb.PathPrefix`). Unset serves at the root.
+  path = "/" <> String.trim(System.get_env("PHX_PATH", ""), "/")
+
   url =
     if force_ssl?,
-      do: [host: host, port: 443, scheme: "https"],
-      else: [host: host, port: String.to_integer(System.get_env("PORT", "4100")), scheme: "http"]
+      do: [host: host, port: 443, scheme: "https", path: path],
+      else: [host: host, port: String.to_integer(System.get_env("PORT", "4100")), scheme: "http", path: path]
 
   config :contentoid, Contentoid.Repo,
     # ssl: true,
